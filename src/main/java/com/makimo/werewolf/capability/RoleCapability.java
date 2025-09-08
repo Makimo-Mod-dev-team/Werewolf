@@ -1,6 +1,9 @@
 package com.makimo.werewolf.capability;
 
-public class RoleCapability implements IRoleCapability {
+import net.minecraft.nbt.CompoundTag;
+import net.minecraftforge.common.util.INBTSerializable;
+
+public class RoleCapability implements IRoleCapability, INBTSerializable<CompoundTag> {
     private Role role = Role.FOOL;
 
     @Override
@@ -11,5 +14,23 @@ public class RoleCapability implements IRoleCapability {
     @Override
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @Override
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("Role", role.name());
+        return tag;
+    }
+
+    @Override
+    public void deserializeNBT(CompoundTag nbt) {
+        if (nbt.contains("Role")) {
+            try {
+                this.role = Role.valueOf(nbt.getString("Role")); // 文字列→enum
+            } catch (IllegalArgumentException e) {
+                this.role = Role.FOOL; // 不正値ならデフォルトに戻す
+            }
+        }
     }
 }

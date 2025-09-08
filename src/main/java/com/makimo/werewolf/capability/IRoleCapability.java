@@ -1,6 +1,6 @@
 package com.makimo.werewolf.capability;
 
-public interface IRoleCapability {
+public interface IRoleCapability { // ロールのCapabilityのインターフェース
     Role getRole();
 
     void setRole(Role role);

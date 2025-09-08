@@ -10,7 +10,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import static com.makimo.werewolf.Werewolf.MOD_ID;
 
-public class MenuRegistry {
+public class MenuRegistry { // メニュー登録するクラス
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MOD_ID);
 
     public static final RegistryObject<MenuType<ShopMenu>> SHOP_MENU = MENUS.register("shop_menu", () -> IForgeMenuType.create((id, inv, buf) -> new ShopMenu(id, inv)));

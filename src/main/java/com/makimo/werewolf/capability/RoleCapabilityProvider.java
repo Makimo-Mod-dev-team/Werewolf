@@ -7,7 +7,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CapabilityProvider implements ICapabilityProvider {
+public class RoleCapabilityProvider implements ICapabilityProvider {
     private final IRoleCapability instance = new RoleCapability();
     private final LazyOptional<IRoleCapability> optional = LazyOptional.of(() -> instance);
 

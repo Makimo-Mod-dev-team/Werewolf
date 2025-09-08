@@ -12,7 +12,7 @@ import net.minecraftforge.registries.RegistryObject;
 import static com.makimo.werewolf.Werewolf.MOD_ID;
 
 @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class CreativeTabRegistry {
+public class CreativeTabRegistry { // クリエイティブタブを登録するクラス
     private static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
 
     public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = TABS.register("creative_tab", () -> CreativeModeTab.builder()
