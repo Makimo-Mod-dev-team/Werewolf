@@ -1,3 +1,6 @@
 {
-  "gui.werewolf.shop" : "Shop"
+  "gui.werewolf.shop" : "Shop",
+  "item.werewolf.coin" : "Coin",
+  "item.werewolf.shop_item" : "Shop",
+  "itemGroup.werewolf.creative_tab" : "Werewolf"
 }

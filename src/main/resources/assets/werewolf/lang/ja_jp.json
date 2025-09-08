@@ -1,3 +1,6 @@
 {
-  "gui.werewolf.shop" : "ショップ"
+  "gui.werewolf.shop" : "ドン〇キホーテ",
+  "item.werewolf.coin" : "金貨",
+  "item.werewolf.shop_item" : "ドン〇キホーテ",
+  "itemGroup.werewolf.creative_tab" : "人狼"
 }
