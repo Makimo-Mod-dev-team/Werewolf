@@ -14,7 +14,7 @@ public class GameManager {
     private static final Set<UUID> fox = new HashSet<>();
 
     public static void assignRoles(MinecraftServer server) {
-        List<ServerPlayer> players = server.getPlayerList().getPlayers();
+        List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
         if (players.isEmpty()) return;
         Collections.shuffle(players);
 
@@ -33,6 +33,7 @@ public class GameManager {
                 cap.setRole(role);
             });
             player.sendSystemMessage(Component.literal("あなたの役職は: " + role.name()));
+            player.sendSystemMessage(Component.literal(players.toString()));
         }
     }
 }
