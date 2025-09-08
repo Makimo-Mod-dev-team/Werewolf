@@ -23,8 +23,9 @@ public class ClientSetupEvents {
                     new ResourceLocation("coins"),
                     (stack, level, entity, seed) -> {
                         int count = stack.getCount();
-                        if (count >= 48) return 3; // 袋
-                        if (count >= 32) return 2; // 束
+                        if (count >= 30) return 4;
+                        if (count >= 20) return 3; // 袋
+                        if (count >= 10) return 2; // 束
                         if (count >= 2)  return 1; // 小銭
                         return 0;                   // 1枚
                     });

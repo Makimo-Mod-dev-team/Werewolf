@@ -27,6 +27,12 @@
         "coins": 3
       },
       "model": "werewolf:item/coin_3"
+    },
+    {
+      "predicate": {
+        "coins": 4
+      },
+      "model": "werewolf:item/coin_4"
     }
   ]
 }
