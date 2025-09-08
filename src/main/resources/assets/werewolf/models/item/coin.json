@@ -1,0 +1,32 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "werewolf:item/coin"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "coins": 0
+      },
+      "model": "werewolf:item/coin_0"
+    },
+    {
+      "predicate": {
+        "coins": 1
+      },
+      "model": "werewolf:item/coin_1"
+    },
+    {
+      "predicate": {
+        "coins": 2
+      },
+      "model": "werewolf:item/coin_2"
+    },
+    {
+      "predicate": {
+        "coins": 3
+      },
+      "model": "werewolf:item/coin_3"
+    }
+  ]
+}
