@@ -2,18 +2,30 @@ package com.makimo.werewolf.capability;
 
 import com.makimo.werewolf.registry.CapabilityRegister;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RoleCapabilityProvider implements ICapabilityProvider {
-    private final IRoleCapability instance = new RoleCapability();
+public class RoleCapabilityProvider implements ICapabilitySerializable<CompoundTag> {
+    private final RoleCapability instance = new RoleCapability();
     private final LazyOptional<IRoleCapability> optional = LazyOptional.of(() -> instance);
 
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         return cap == CapabilityRegister.ROLE_CAP ? optional.cast() : LazyOptional.empty();
+    }
+
+    @Override
+    public CompoundTag serializeNBT() {
+        return instance.serializeNBT();
+    }
+
+    @Override
+    public void deserializeNBT(CompoundTag nbt) {
+        instance.deserializeNBT(nbt);
     }
 }

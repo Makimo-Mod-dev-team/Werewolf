@@ -1,5 +1,6 @@
 package com.makimo.werewolf.command;
 
+import com.makimo.werewolf.game.GameManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
@@ -19,6 +20,7 @@ public class RegisterCommand {
             .then(Commands.literal("start")
                 .executes(context -> {
                     //ここに処理を書く
+                    GameManager.assignRoles(context.getSource().getServer());
                     context.getSource().getPlayerOrException().sendSystemMessage(Component.nullToEmpty("[Dev]:Success!"));
                     return Command.SINGLE_SUCCESS;
                 }))

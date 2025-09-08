@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public class RoleCapability implements IRoleCapability, INBTSerializable<CompoundTag> {
-    private Role role = Role.FOOL;
+    private Role role = Role.VILLAGE;
 
     @Override
     public Role getRole() {
@@ -29,7 +29,7 @@ public class RoleCapability implements IRoleCapability, INBTSerializable<Compoun
             try {
                 this.role = Role.valueOf(nbt.getString("Role")); // 文字列→enum
             } catch (IllegalArgumentException e) {
-                this.role = Role.FOOL; // 不正値ならデフォルトに戻す
+                this.role = Role.VILLAGE; // 不正値ならデフォルトに戻す
             }
         }
     }
