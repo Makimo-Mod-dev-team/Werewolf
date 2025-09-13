@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
-public class ShopItem extends Item {
+public class ShopItem extends Item { // 店アイテム
     public ShopItem(Properties properties) {
         super(properties);
     }
