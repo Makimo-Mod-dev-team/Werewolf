@@ -23,6 +23,12 @@ public class CrystalItem extends Item {// 占いアイテム
         super(properties);
     }
 
+    @Override
+    public boolean isFoil(ItemStack stack) {
+        // このメソッドがtrueを返すことで、エンチャントのオーラが表示される
+        return true;
+    }
+
     public Boolean detect_player(Level level, Player player) { // プレイヤーの検知
         Vec3 playerPos = player.position();
         AABB searchBox = new AABB(
