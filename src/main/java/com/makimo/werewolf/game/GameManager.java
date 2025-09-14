@@ -5,6 +5,9 @@ import com.makimo.werewolf.registry.CapabilityRegister;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
 
@@ -12,7 +15,8 @@ public class GameManager {
     private static final Set<UUID> wolves = new HashSet<>();
     private static final Set<UUID> villagers = new HashSet<>();
     private static final Set<UUID> fox = new HashSet<>();
-    private static int number_wolves = 1;
+    public static int number_wolves = 1;
+    public static int number_foxes = 1;
 
     public static void assignRoles(MinecraftServer server) {
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
@@ -25,7 +29,7 @@ public class GameManager {
             if (i < number_wolves) {
                 choose = Role.WEREWOLF;
                 wolves.add(player.getUUID());
-            } else if (i == number_wolves) {
+            } else if (i <= number_wolves && i < number_wolves + number_foxes) {
                 choose = Role.FOX;
                 fox.add(player.getUUID());
             } else {

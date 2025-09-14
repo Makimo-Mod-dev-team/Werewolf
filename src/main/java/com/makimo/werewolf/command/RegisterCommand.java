@@ -2,6 +2,7 @@ package com.makimo.werewolf.command;
 
 import com.makimo.werewolf.game.GameManager;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -36,12 +37,24 @@ public class RegisterCommand {
                     return Command.SINGLE_SUCCESS;
                 }))
             .then(Commands.literal("setting")
-                .executes(context -> {
-                    //ここに処理を書く
-                    context.getSource().getPlayerOrException().sendSystemMessage(Component.nullToEmpty("[Dev]:Success!"));
-                    return Command.SINGLE_SUCCESS;
-                }));
-
+                .then(Commands.argument("NumberOfWerewolf", IntegerArgumentType.integer())
+                    .then(Commands.argument("NumberOfFox", IntegerArgumentType.integer())
+                        .executes(context -> {
+                            try {
+                                // === ここで引数を変数に格納 ===
+                                GameManager.number_wolves = IntegerArgumentType.getInteger(context, "NumberOfWerewolf");
+                                GameManager.number_foxes = IntegerArgumentType.getInteger(context, "NumberOfFox");
+                            } catch (Exception e) {
+                                context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
+                                e.printStackTrace(); // コンソールに詳細出力
+                            }
+                            // 確認用にプレイヤーに表示
+                            context.getSource().sendSuccess(
+                                () -> Component.literal("NumberOfWerewolf=" + GameManager.number_wolves + "NumberOfFox=" + GameManager.number_foxes),
+                                    false
+                            );
+                            return Command.SINGLE_SUCCESS;
+                        }))));
         event.getDispatcher().register(builder);
     }
 }
