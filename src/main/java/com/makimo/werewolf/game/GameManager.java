@@ -25,7 +25,7 @@ public class GameManager {
             if (i < number_wolves) {
                 choose = Role.WEREWOLF;
                 wolves.add(player.getUUID());
-            } else if (number_wolves < i && i < 2 ) {
+            } else if (i == number_wolves) {
                 choose = Role.FOX;
                 fox.add(player.getUUID());
             } else {
