@@ -4,5 +4,5 @@ public enum Role {
     VILLAGE, // 市民
     SEER, // 占い師
     WEREWOLF, // 人狼
-    FOX
+    FOX // 妖狐
 }

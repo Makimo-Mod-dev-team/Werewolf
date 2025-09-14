@@ -12,6 +12,7 @@ public class GameManager {
     private static final Set<UUID> wolves = new HashSet<>();
     private static final Set<UUID> villagers = new HashSet<>();
     private static final Set<UUID> fox = new HashSet<>();
+    private static int number_wolves = 1;
 
     public static void assignRoles(MinecraftServer server) {
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
@@ -21,9 +22,12 @@ public class GameManager {
         for (int i = 0; i < players.size(); i++) {
             ServerPlayer player = players.get(i);
             Role choose;
-            if (i < 1) {
+            if (i < number_wolves) {
                 choose = Role.WEREWOLF;
                 wolves.add(player.getUUID());
+            } else if (i == number_wolves) {
+                choose = Role.FOX;
+                fox.add(player.getUUID());
             } else {
                 choose = Role.VILLAGE;
                 villagers.add(player.getUUID());
@@ -33,7 +37,7 @@ public class GameManager {
                 cap.setRole(role);
             });
             player.sendSystemMessage(Component.literal("あなたの役職は: " + role.name()));
-            player.sendSystemMessage(Component.literal(players.toString()));
+            player.sendSystemMessage(Component.literal(players.toString())); //デバッグ用
         }
     }
 }
