@@ -25,7 +25,7 @@ public class RegisterCommand {
                         MinecraftServer server = context.getSource().getServer();
                         if (server == null) {
                             context.getSource().sendFailure(Component.literal("サーバーが取得できませんでした。サーバー側でコマンドを実行してください。"));
-                            return;
+                            return 0;
                         }
                         GameManager.assignRoles(server);
                     } catch (Exception e) {
