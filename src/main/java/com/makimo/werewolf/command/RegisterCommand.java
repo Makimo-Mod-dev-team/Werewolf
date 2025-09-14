@@ -25,16 +25,15 @@ public class RegisterCommand {
                         MinecraftServer server = context.getSource().getServer();
                         if (server == null) {
                             context.getSource().sendFailure(Component.literal("サーバーが取得できませんでした。サーバー側でコマンドを実行してください。"));
-                            return 0;
+                            return;
                         }
                         GameManager.assignRoles(server);
-                        context.getSource().getPlayerOrException().sendSystemMessage(Component.nullToEmpty("[Dev]:Success!"));
-                        return Command.SINGLE_SUCCESS;
                     } catch (Exception e) {
                         context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
                         e.printStackTrace(); // コンソールに詳細出力
                     }
-                    return 1;
+                    context.getSource().getPlayerOrException().sendSystemMessage(Component.nullToEmpty("[Dev]:Success!"));
+                    return Command.SINGLE_SUCCESS;
                 }))
             .then(Commands.literal("setting")
                 .executes(context -> {
@@ -42,6 +41,7 @@ public class RegisterCommand {
                     context.getSource().getPlayerOrException().sendSystemMessage(Component.nullToEmpty("[Dev]:Success!"));
                     return Command.SINGLE_SUCCESS;
                 }));
+
         event.getDispatcher().register(builder);
     }
 }
