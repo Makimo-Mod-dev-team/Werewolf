@@ -21,6 +21,7 @@ public class CreativeTabRegistry { // クリエイティブタブを登録する
             .displayItems((enabledFeatures, entries) -> {
                 entries.accept(ItemRegistry.SHOP_ITEM.get());
                 entries.accept(ItemRegistry.COIN.get());
+                entries.accept(ItemRegistry.CRYSTAL.get());
             })
             .build());
 
