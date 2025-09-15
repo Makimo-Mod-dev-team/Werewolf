@@ -28,6 +28,7 @@ public class RegisterCommand {
                             context.getSource().sendFailure(Component.literal("サーバーが取得できませんでした。サーバー側でコマンドを実行してください。"));
                             return 0;
                         }
+
                         GameManager.assignRoles(server);
                     } catch (Exception e) {
                         context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
@@ -41,7 +42,7 @@ public class RegisterCommand {
                     .then(Commands.argument("NumberOfFox", IntegerArgumentType.integer())
                         .executes(context -> {
                             try {
-                                // === ここで引数を変数に格納 ===
+                                // 引数を変数に格納
                                 GameManager.number_wolves = IntegerArgumentType.getInteger(context, "NumberOfWerewolf");
                                 GameManager.number_foxes = IntegerArgumentType.getInteger(context, "NumberOfFox");
                             } catch (Exception e) {
