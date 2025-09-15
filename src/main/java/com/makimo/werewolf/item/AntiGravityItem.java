@@ -2,7 +2,7 @@ package com.makimo.werewolf.item;
 
 import com.makimo.werewolf.capability.Gravity;
 import com.makimo.werewolf.registry.CapabilityRegister;
-//import com.min01.gravityapi.api.GravityChangerAPI;
+import com.min01.gravityapi.api.GravityChangerAPI;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -24,10 +24,10 @@ public class AntiGravityItem extends Item {
         player.getCapability(CapabilityRegister.GRAVITY_CAP).ifPresent(cap -> {
             if (cap.getGravity() == Gravity.NOMAL) {
                 cap.setGravity(Gravity.FLIP);
-                //GravityChangerAPI.setBaseGravityDirection(player, Direction.UP);
+                GravityChangerAPI.setBaseGravityDirection(player, Direction.UP);
             } else {
                 cap.setGravity(Gravity.NOMAL);
-                //GravityChangerAPI.setBaseGravityDirection(player, Direction.DOWN);
+                GravityChangerAPI.setBaseGravityDirection(player, Direction.DOWN);
             }
         });
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
