@@ -57,22 +57,7 @@ public class CrystalItem extends Item {// 占いアイテム
                 if (targetEntity instanceof Player) {
                     Player targetPlayer = (Player) targetEntity;
                     targetPlayer.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
-                        Role targetRole = cap.getRole();
-                        String resultMessage;
-
-                        // 陣営ごとに表示テキストを分ける
-                        switch (targetRole) {
-                            case WEREWOLF -> resultMessage = targetPlayer.getName().getString() + "は人狼陣営";
-                            case VILLAGE -> resultMessage = targetPlayer.getName().getString() + "は村人陣営";
-                            case FOX -> resultMessage = targetPlayer.getName().getString() + "は妖狐陣営";
-                            default -> resultMessage = targetPlayer.getName().getString() + "はプレイヤー"; // たぶんいらない
-                        }
-                        // 使用者のチャット欄にのみ送信
-                        player.sendSystemMessage(Component.literal("占い結果 ： " + resultMessage));
-                        // 妖狐だった場合、ターゲットをkill
-                        if (targetRole == Role.FOX) {
-                            targetPlayer.hurt(player.damageSources().magic(), Float.MAX_VALUE); // 即死
-                        }
+                        player.sendSystemMessage(Component.literal("占い結果：" + targetPlayer.getDisplayName().getString() + "は" + cap.getRole().name()));
                     });
                     return true; // 最初の見つかったプレイヤーで終了
                 }
@@ -83,16 +68,12 @@ public class CrystalItem extends Item {// 占いアイテム
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide) {
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
         if (detect_player(level, player)) {
-            // 占い成功時にアイテムを1つ消費
-            //stack.shrink(1);
             return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
         } else {
-            player.sendSystemMessage(Component.literal("占えるプレイヤーがいませんでした。"));
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
     }
