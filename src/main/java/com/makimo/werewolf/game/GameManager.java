@@ -36,7 +36,6 @@ public class GameManager {
     private static List<String> snapshotVillagers;
     private static List<String> snapshotFox;
 
-    //
     public static void assignRoles(MinecraftServer server) {
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
         if (players.isEmpty()) return;
@@ -112,6 +111,7 @@ public class GameManager {
         }
     }
 
+    // 停止処理
     private static void stopMonitoringAndAnnounce(MinecraftServer server) {
         monitoring = false; // 監視停止命令
         if (server == null) return;
@@ -140,13 +140,12 @@ public class GameManager {
     public static void sendTitleToPlayer(ServerPlayer player, String title, String subtitle) {
         // タイトルの送信
         player.connection.send(new ClientboundSetTitleTextPacket(Component.literal(title)));
-
         // サブタイトルの送信
         player.connection.send(new ClientboundSetSubtitleTextPacket(Component.literal(subtitle)));
     }
 
     // Roleから表示文字列を取得
-    private static String getRoleDisplayName(Role role) {
+    public static String getRoleDisplayName(Role role) {
         return switch (role) {
             case WEREWOLF -> "人狼陣営";
             case VILLAGE -> "村人陣営";
@@ -155,6 +154,7 @@ public class GameManager {
         };
     }
 
+    // プレイヤーリスト(UID)作製
     private static List<String> getPlayerNamesList(MinecraftServer server, Set<UUID> uuids) {
         List<String> names = new ArrayList<>();
         for (UUID uuid : uuids) {
