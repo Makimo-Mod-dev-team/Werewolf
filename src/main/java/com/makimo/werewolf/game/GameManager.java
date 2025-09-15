@@ -60,6 +60,12 @@ public class GameManager {
     public static void assignRoles(MinecraftServer server) {
         clearAllInventories(server); // 全員のインベントリをクリア
         DifficultyChanger.setHardDifficulty(); // DifficultyをHardに
+        // リストリセット
+        wolves.clear();
+        lunatics.clear();
+        villagers.clear();
+        fox.clear();
+
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
         if (players.isEmpty()) return;
         Collections.shuffle(players);
