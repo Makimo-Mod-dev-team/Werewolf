@@ -28,10 +28,10 @@ import java.util.*;
 @Mod.EventBusSubscriber
 public class GameManager {
     // ゲーム中の陣営リスト作製
-    private static final Set<UUID> wolves = new HashSet<>();
-    private static final Set<UUID> lunatics = new HashSet<>();
-    private static final Set<UUID> villagers = new HashSet<>();
-    private static final Set<UUID> fox = new HashSet<>();
+    public static final Set<UUID> wolves = new HashSet<>();
+    public static final Set<UUID> lunatics = new HashSet<>();
+    public static final Set<UUID> villagers = new HashSet<>();
+    public static final Set<UUID> fox = new HashSet<>();
     // 変数作製
     public static int number_wolves = 1;
     public static int number_lunatics = 1;
@@ -41,10 +41,10 @@ public class GameManager {
     public static double homeX = 0.0, homeY = 100.0, homeZ = 0.0;
 
     // 監視開始前のスナップショットリスト
-    private static List<String> snapshotWolves;
-    private static List<String> snapshotLunatics;
-    private static List<String> snapshotVillagers;
-    private static List<String> snapshotFox;
+    public static Set<UUID> snapshotWolves;
+    public static Set<UUID> snapshotLunatics;
+    public static Set<UUID> snapshotVillagers;
+    public static Set<UUID> snapshotFox;
 
     // 昼夜サイクル関連
     public static int cycleDayTicks = 2400;     // 昼の長さ（tick単位、20tick=1秒）
@@ -100,10 +100,10 @@ public class GameManager {
         // 時間を昼に
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set day");
         // リストをスナップショットリストに保存
-        snapshotWolves = getPlayerNamesList(server, wolves);
-        snapshotLunatics = getPlayerNamesList(server, lunatics);
-        snapshotVillagers = getPlayerNamesList(server, villagers);
-        snapshotFox = getPlayerNamesList(server, fox);
+        snapshotWolves = wolves;
+        snapshotLunatics = lunatics;
+        snapshotVillagers = villagers;
+        snapshotFox = fox;
 
         monitoring = true; // 監視開始命令
         isDay = true;
@@ -188,10 +188,10 @@ public class GameManager {
             player.sendSystemMessage(Component.literal("======= ゲーム終了 ======="));
             player.sendSystemMessage(Component.literal("勝者 : " + winner));
             // 保存しておいたスナップショットを表示
-            player.sendSystemMessage(Component.literal("人狼陣営・人狼 : " + snapshotWolves).withStyle(ChatFormatting.RED));
-            player.sendSystemMessage(Component.literal("人狼陣営・狂人 : " + snapshotLunatics).withStyle(ChatFormatting.RED));
-            player.sendSystemMessage(Component.literal("村人陣営 : " + snapshotVillagers).withStyle(ChatFormatting.GREEN));
-            player.sendSystemMessage(Component.literal("妖狐陣営 : " + snapshotFox).withStyle(ChatFormatting.LIGHT_PURPLE));
+            player.sendSystemMessage(Component.literal("人狼陣営・人狼 : " + getPlayerNamesList(server, snapshotWolves)).withStyle(ChatFormatting.RED));
+            player.sendSystemMessage(Component.literal("人狼陣営・狂人 : " + getPlayerNamesList(server, snapshotLunatics)).withStyle(ChatFormatting.RED));
+            player.sendSystemMessage(Component.literal("村人陣営 : " + getPlayerNamesList(server, snapshotVillagers)).withStyle(ChatFormatting.GREEN));
+            player.sendSystemMessage(Component.literal("妖狐陣営 : " + getPlayerNamesList(server, snapshotFox)).withStyle(ChatFormatting.LIGHT_PURPLE));
             player.sendSystemMessage(Component.literal("========================"));
             // タイトル表示
             sendTitleToPlayer(player, "勝者 : " + winner, "");
