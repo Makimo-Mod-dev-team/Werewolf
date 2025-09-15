@@ -68,8 +68,8 @@ public class WolvesAxeItem extends Item {
         if (level.isClientSide) {
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
-        ItemStack stack = player.getItemInHand(hand);
         if (detect_player(level, player)) {
+            ItemStack stack = player.getItemInHand(hand);
             player.level().playSound(
                     null,
                     player.getX(), // X座標

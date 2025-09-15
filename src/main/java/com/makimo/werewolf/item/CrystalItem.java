@@ -87,9 +87,9 @@ public class CrystalItem extends Item {// 占いアイテム
         if (level.isClientSide) {
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
-        ItemStack stack = player.getItemInHand(hand);
         if (detect_player(level, player)) {
             // 占い成功時にアイテムを1つ消費
+            ItemStack stack = player.getItemInHand(hand);
             stack.shrink(1);
             player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
