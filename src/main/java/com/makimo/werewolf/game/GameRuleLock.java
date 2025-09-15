@@ -21,5 +21,6 @@ class GameRuleLock {
         server.getGameRules().getRule(GameRules.RULE_KEEPINVENTORY).set(true, server);
         server.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
         server.getGameRules().getRule(GameRules.RULE_WEATHER_CYCLE).set(false, server);
+        server.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
     }
 }
