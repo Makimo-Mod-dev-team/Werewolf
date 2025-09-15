@@ -19,10 +19,11 @@ public class CandleItem extends Item {
         if (!level.isClientSide) {
             NetworkHooks.openScreen(
                     (net.minecraft.server.level.ServerPlayer) player,
-                    new CandleMenu.Provider(), // 後で定義するProvider
+                    new CandleMenu.Provider(player),
                     buf -> {}
             );
         }
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
     }
 }
+
