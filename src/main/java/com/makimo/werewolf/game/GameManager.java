@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.Difficulty;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.event.TickEvent;
@@ -58,6 +59,7 @@ public class GameManager {
 
     public static void assignRoles(MinecraftServer server) {
         clearAllInventories(server); // 全員のインベントリをクリア
+        DifficultyChanger.setHardDifficulty(); // DifficultyをHardに
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
         if (players.isEmpty()) return;
         Collections.shuffle(players);
@@ -201,10 +203,13 @@ public class GameManager {
         lunatics.clear();
         villagers.clear();
         fox.clear();
+        // 変数リセット
         winner = null;
         GameManager.isGameRunning = false;
         // インベントリをクリア
         clearAllInventories(server);
+        // DifficultyをPeacefulに
+        DifficultyChanger.setPeacefulDifficulty();
     }
 
     // プレイヤーにタイトル＋サブタイトルを送信
@@ -252,6 +257,22 @@ public class GameManager {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             player.getInventory().clearContent();
             player.inventoryMenu.broadcastChanges(); // クライアントに更新通知
+        }
+    }
+
+    // ゲームの難易度を変更
+    public class DifficultyChanger {
+        public static void setPeacefulDifficulty(){
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if (server != null) {
+                server.setDifficulty(Difficulty.PEACEFUL, true); // trueで即座にプライヤーへ反映
+            }
+        }
+        public static void setHardDifficulty() {
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if (server != null) {
+                server.setDifficulty(Difficulty.HARD, true); // trueで即座にプレイヤーへ反映
+            }
         }
     }
 }
