@@ -59,7 +59,15 @@ public class ShopMenu extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(Player player, int index) {return ItemStack.EMPTY;}
 
-
+    public void Shopping(Player player, ItemStack cost) {
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack slotStack = player.getInventory().getItem(i);
+            if (slotStack.getItem() == cost.getItem() && slotStack.getCount() >= cost.getCount()) {
+                slotStack.shrink(cost.getCount());
+                break; // 最初のスロットで見つかったらループを終了
+            }
+        }
+    }
 
     @Override
     public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
@@ -72,7 +80,7 @@ public class ShopMenu extends AbstractContainerMenu {
                 // 例えば「エメラルド1個でダイヤを買う」みたいな処理
                 ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 1);
                 if (player.getInventory().contains(cost)) {
-                    player.getInventory().removeItem(cost);
+                    Shopping(player, cost);
                     player.getInventory().add(new ItemStack(ItemRegistry.CRYSTAL.get(), 1));
                 }
             }
