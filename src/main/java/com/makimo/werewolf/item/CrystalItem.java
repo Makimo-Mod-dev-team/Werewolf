@@ -66,13 +66,12 @@ public class CrystalItem extends Item {// 占いアイテム
                             default -> "プレイヤー";
                         };
 
-                        // 使用者にのみ結果をチャット表示
-                        player.sendSystemMessage(Component.literal("占い結果：" + targetPlayer.getDisplayName().getString() + "は" + displayText));
-
                         // 妖狐だった場合は占われたプレイヤーをkill
                         if (cap.getRole() == Role.FOX) {
                             targetPlayer.hurt(player.level().damageSources().playerAttack(player), Float.MAX_VALUE);
                             player.sendSystemMessage(Component.literal(targetPlayer.getDisplayName().getString() + "は妖狐だった"));
+                        } else {
+                            player.sendSystemMessage(Component.literal("占い結果：" + targetPlayer.getDisplayName().getString() + "は" + displayText));
                         }
                     });
                     return true; // 最初の見つかったプレイヤーで終了
