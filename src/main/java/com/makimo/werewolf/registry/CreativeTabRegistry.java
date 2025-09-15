@@ -24,6 +24,7 @@ public class CreativeTabRegistry { // クリエイティブタブを登録する
                 entries.accept(ItemRegistry.CRYSTAL.get());
                 entries.accept(ItemRegistry.WOLVES_AXE.get());
                 entries.accept(ItemRegistry.INVISIBLE_ITEM.get());
+                entries.accept(ItemRegistry.BOMB_ITEM.get());
             })
             .build());
 

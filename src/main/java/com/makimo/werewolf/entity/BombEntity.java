@@ -1,6 +1,8 @@
 package com.makimo.werewolf.entity;
 
 import com.makimo.werewolf.registry.EntityRegistry;
+import com.min01.gravityapi.api.GravityChangerAPI;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,25 +15,34 @@ import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class BombEntity extends ThrowableProjectile implements GeoEntity {
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private boolean stuck = false;
+    private Player owner;
     public BombEntity(EntityType<? extends ThrowableProjectile> type, Level level) {
         super(type, level);
     }
 
     public BombEntity(Level level, LivingEntity thrower) {
-        super(EntityRegistry.get(), thrower, level);
+        super(EntityRegistry.BOMB_ENTITY.get(), thrower, level);
+        this.owner = (Player) thrower;
     }
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
-        // 壁や床に当たったら固着
+        if (this.stuck) {
+            return;
+        }
         this.setDeltaMovement(Vec3.ZERO);
         this.noPhysics = true;
+        this.setNoGravity(true);
+        this.setPos(result.getLocation());
         this.stuck = true;
     }
 
@@ -47,21 +58,36 @@ public class BombEntity extends ThrowableProjectile implements GeoEntity {
     public void tick() {
         super.tick();
         if (!level().isClientSide && stuck) {
-            double radius = 3.0D;
+            double radius = 1.0D;
             List<Player> nearby = this.level().getEntitiesOfClass(Player.class,
                     this.getBoundingBox().inflate(radius),
-                    p -> !p.isSpectator() && p.isAlive());
+                    p -> !p.isSpectator() && p.isAlive() && !p.getUUID().equals(this.owner.getUUID()));
 
             if (!nearby.isEmpty()) {
                 explode();
             }
+            this.setDeltaMovement(Vec3.ZERO);
+            this.setPos(this.position());
         }
     }
 
     private void explode() {
-        this.level().explode(this, this.getX(), this.getY(), this.getZ(),
-                3.0F, Level.ExplosionInteraction.TNT);
-        this.discard(); // 自分を消す
+        double radius = 5.0D;
+        List<Player> players = this.level().getEntitiesOfClass(Player.class,
+                this.getBoundingBox().inflate(radius),
+                p -> !p.isSpectator() && p.isAlive() && !p.getUUID().equals(this.owner.getUUID()));
+
+        if (!players.isEmpty()) {
+            // 一番近いプレイヤーを探す
+            Player nearest = players.stream()
+                    .min(Comparator.comparingDouble(p -> p.distanceToSqr(this)))
+                    .orElse(null);
+
+            if (nearest != null) {
+                // 即死（演出付きなら hurt でも可）
+                nearest.kill();
+            }
+        }
     }
 
     @Override
@@ -71,7 +97,7 @@ public class BombEntity extends ThrowableProjectile implements GeoEntity {
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return null;
+        return cache;
     }
 
     @Override
