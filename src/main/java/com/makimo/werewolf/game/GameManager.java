@@ -21,7 +21,6 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.world.BossEvent.BossBarColor;
 import net.minecraft.world.BossEvent.BossBarOverlay;
-import net.minecraft.server.level.ServerPlayer;
 
 import java.util.*;
 
@@ -77,6 +76,8 @@ public class GameManager {
             player.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
                 cap.setRole(role);
             });
+            // "/gamemode adventure @a"
+            player.setGameMode(GameType.ADVENTURE);
             timeBossBar.addPlayer(player);
             sendTitleToPlayer(player, "Game Start", "あなたの陣営 : " + getRoleDisplayName(role));
             player.sendSystemMessage(Component.literal("あなたの陣営 : " + getRoleDisplayName(role)));
