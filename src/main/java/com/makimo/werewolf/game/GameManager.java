@@ -3,6 +3,7 @@ package com.makimo.werewolf.game;
 import com.makimo.werewolf.capability.Role;
 import com.makimo.werewolf.registry.CapabilityRegister;
 import com.mojang.authlib.GameProfile;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
@@ -105,7 +106,13 @@ public class GameManager {
                     .map(cap -> cap.getRole())
                     .orElse(Role.VILLAGE);
             // 第二引数 true でアクションバー表示
-            player.displayClientMessage(Component.literal("あなたの陣営 : " + getRoleDisplayName(role)), true);
+            ChatFormatting formatting = ChatFormatting.WHITE;
+            switch (role) {
+                case VILLAGE -> formatting = ChatFormatting.GREEN;
+                case WEREWOLF -> formatting = ChatFormatting.RED;
+                case FOX -> formatting = ChatFormatting.LIGHT_PURPLE;
+            }
+            player.displayClientMessage(Component.literal("あなたの陣営 : " + getRoleDisplayName(role)).withStyle(formatting), true);
         }
 
         if (wolves.isEmpty() || villagers.isEmpty()) {
@@ -163,9 +170,9 @@ public class GameManager {
             player.sendSystemMessage(Component.literal("======= ゲーム終了 ======="));
             player.sendSystemMessage(Component.literal("勝者 : " + winner));
             // 保存しておいたスナップショットを表示
-            player.sendSystemMessage(Component.literal("人狼陣営 : " + snapshotWolves));
-            player.sendSystemMessage(Component.literal("村人陣営 : " + snapshotVillagers));
-            player.sendSystemMessage(Component.literal("妖狐陣営 : " + snapshotFox));
+            player.sendSystemMessage(Component.literal("人狼陣営 : " + snapshotWolves).withStyle(ChatFormatting.RED));
+            player.sendSystemMessage(Component.literal("村人陣営 : " + snapshotVillagers).withStyle(ChatFormatting.GREEN));
+            player.sendSystemMessage(Component.literal("妖狐陣営 : " + snapshotFox).withStyle(ChatFormatting.LIGHT_PURPLE));
             player.sendSystemMessage(Component.literal("========================"));
             // タイトル表示
             sendTitleToPlayer(player, "勝者 : " + winner, "");

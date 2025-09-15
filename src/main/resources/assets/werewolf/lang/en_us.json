@@ -3,5 +3,6 @@
   "item.werewolf.coin" : "Coin",
   "item.werewolf.crystal" : "Crystal",
   "item.werewolf.shop_item" : "Shop",
+  "item.werewolf.wolves_axe" : "Werewolf Axe",
   "itemGroup.werewolf.creative_tab" : "Werewolf"
 }
