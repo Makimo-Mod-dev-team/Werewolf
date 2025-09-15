@@ -37,6 +37,14 @@ public class WolvesAxeItem extends Item {
         super.appendHoverText(stack, level, tooltip, flag);
     }
 
+    public void attack(Player player) {
+        player.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
+            if (cap.getRole() != Role.FOX) {
+                player.kill();
+            }
+        });
+    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (level.isClientSide) {
@@ -44,11 +52,7 @@ public class WolvesAxeItem extends Item {
         }
         Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 3);
         if (targetPlayer != null) {
-            targetPlayer.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
-                if (cap.getRole() != Role.FOX) {
-                    targetPlayer.kill();
-                }
-            });
+            attack(targetPlayer);
             ItemStack stack = player.getItemInHand(hand);
             player.level().playSound(
                     null,

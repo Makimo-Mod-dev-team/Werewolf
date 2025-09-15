@@ -27,8 +27,8 @@ public class CrystalItem extends Item {// 占いアイテム
         return true;
     }
 
-    public void divination(Player player) {
-        player.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
+    public void divination(Player player, Player target) {
+        target.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
             String displayText = switch (cap.getRole()) {
                 case WEREWOLF -> "人狼陣営";
                 case LUNATIC, VILLAGE -> "村人陣営";
@@ -36,10 +36,10 @@ public class CrystalItem extends Item {// 占いアイテム
                 default -> "プレイヤー";
             };
             if (cap.getRole() == Role.FOX) {
-                player.hurt(player.level().damageSources().playerAttack(player), Float.MAX_VALUE);
+                target.hurt(player.level().damageSources().playerAttack(player), Float.MAX_VALUE);
                 player.sendSystemMessage(Component.literal(player.getDisplayName().getString() + "は妖狐だった"));
             } else {
-                player.sendSystemMessage(Component.literal("占い結果：" + player.getDisplayName().getString() + "は" + displayText));
+                player.sendSystemMessage(Component.literal("占い結果：" + target.getDisplayName().getString() + "は" + displayText));
             }
         });
     }
@@ -62,7 +62,7 @@ public class CrystalItem extends Item {// 占いアイテム
         Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 3);
         if (targetPlayer != null) {
             ItemStack stack = player.getItemInHand(hand);
-            divination(targetPlayer);
+            divination(player, targetPlayer);
             stack.shrink(1);
             player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
