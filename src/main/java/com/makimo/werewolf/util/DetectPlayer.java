@@ -1,6 +1,5 @@
 package com.makimo.werewolf.util;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
@@ -9,7 +8,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class DetectPlayer {
-    public static void DetectPlayerFromLayCast(Level level, Player player, int dis) {
+    public static Player DetectPlayerFromLayCast(Level level, Player player, int dis) {
         // プレイヤーの視線の位置
         Vec3 eyePos = player.getEyePosition();
 
@@ -35,7 +34,8 @@ public class DetectPlayer {
 
         if (hitResult != null && hitResult.getEntity() instanceof Player hitPlayer) {
             // ここで他プレイヤーにヒット！
-            player.sendSystemMessage(Component.literal("okOKOk"));
+            return hitPlayer;
         }
+        return null;
     }
 }

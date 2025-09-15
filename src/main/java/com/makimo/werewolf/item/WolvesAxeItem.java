@@ -2,6 +2,7 @@ package com.makimo.werewolf.item;
 
 import com.makimo.werewolf.capability.Role;
 import com.makimo.werewolf.registry.CapabilityRegister;
+import com.makimo.werewolf.util.DetectPlayer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -26,47 +27,6 @@ public class WolvesAxeItem extends Item {
         super(properties);
     }
 
-    public Boolean detect_player(Level level, Player player) { // プレイヤーの検知
-        Vec3 playerPos = player.position();
-        AABB searchBox = new AABB(
-                playerPos.x - 3.0D, playerPos.y - 3.0D, playerPos.z - 3.0D,
-                playerPos.x + 3.0D, playerPos.y + 3.0D, playerPos.z + 3.0D
-        );
-        // プレイヤーの目の位置
-        Vec3 eyePos = player.getEyePosition();
-        // プレイヤーの視線ベクトル
-        Vec3 lookVec = player.getLookAngle();
-
-        List<Entity> nearbyEntities = level.getEntitiesOfClass(Entity.class, searchBox, (entity) -> entity != player);
-        for (Entity targetEntity : nearbyEntities) {
-            // ターゲットエンティティの目の位置
-            Vec3 targetEyePos = targetEntity.getEyePosition();
-
-            // プレイヤーからターゲットエンティティへのベクトル
-            Vec3 playerToTargetVec = targetEyePos.subtract(eyePos).normalize();
-
-            // 視線ベクトルとターゲットへのベクトルの内積を計算
-            double dotProduct = lookVec.dot(playerToTargetVec);
-
-            // 内積が1に近いほど視線上に近い。許容範囲を設定（例：0.9以上）
-            if (dotProduct > 0.98) {
-                // 視線の先にあるエンティティを検出！
-                if (targetEntity instanceof Player) {
-                    Player targetPlayer = (Player) targetEntity;
-                    AtomicBoolean kill = new AtomicBoolean(false);
-                    targetPlayer.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
-                        if (cap.getRole() != Role.FOX) {
-                            targetPlayer.kill();
-                            kill.set(true);
-                        }
-                    });
-                    return kill.get(); // 最初の見つかったプレイヤーで終了
-                }
-            }
-        }
-        return false;
-    }
-
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal("村人陣営に右クリックすると即死させるが"));
@@ -82,7 +42,13 @@ public class WolvesAxeItem extends Item {
         if (level.isClientSide) {
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
-        if (detect_player(level, player)) {
+        Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(level, player, 3);
+        if (targetPlayer != null) {
+            targetPlayer.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
+                if (cap.getRole() != Role.FOX) {
+                    targetPlayer.kill();
+                }
+            });
             ItemStack stack = player.getItemInHand(hand);
             player.level().playSound(
                     null,
