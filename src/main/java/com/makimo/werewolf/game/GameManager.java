@@ -9,6 +9,7 @@ import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.event.TickEvent;
@@ -30,6 +31,7 @@ public class GameManager {
     public static int number_foxes = 1;
     public static String winner = null;
     private static boolean monitoring = false;
+    public static double homeX = 0.0, homeY = 100.0, homeZ = 0.0;
 
     // 監視開始前のスナップショットリスト
     private static List<String> snapshotWolves;
@@ -37,6 +39,7 @@ public class GameManager {
     private static List<String> snapshotFox;
 
     public static void assignRoles(MinecraftServer server) {
+        clearAllInventories(server); // 全員のインベントリをクリア
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
         if (players.isEmpty()) return;
         Collections.shuffle(players);
@@ -107,7 +110,7 @@ public class GameManager {
         UUID uuid = player.getUUID(); // UUID取得
         boolean removed = wolves.remove(uuid) | villagers.remove(uuid) | fox.remove(uuid); // 所属陣営から削除
         if (removed) {
-            player.setGameMode(GameType.SPECTATOR); // "/gamemode spectator"
+            player.setGameMode(GameType.SPECTATOR); // "/gamemode spectator @s"
         }
     }
 
@@ -127,6 +130,10 @@ public class GameManager {
             sendTitleToPlayer(player, "勝者 : " + winner, "");
             // 終了サウンドを鳴らす
             player.playNotifySound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.MASTER, 1.0F, 1.0F);
+            // 全員ホームにtp
+            //player.teleportTo(GameManager.homeX, GameManager.homeY, GameManager.homeZ);
+            // "/gamemode adventure @a"
+            player.setGameMode(GameType.ADVENTURE);
         }
 
         // リストリセット
@@ -134,6 +141,8 @@ public class GameManager {
         villagers.clear();
         fox.clear();
         winner = null;
+        // インベントリをクリア
+        clearAllInventories(server);
     }
 
     // プレイヤーにタイトル＋サブタイトルを送信
@@ -173,5 +182,13 @@ public class GameManager {
             }
         }
         return names;
+    }
+
+    // 全員のインベントリをクリア
+    public static void clearAllInventories(MinecraftServer server) {
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            player.getInventory().clearContent();
+            player.inventoryMenu.broadcastChanges(); // クライアントに更新通知
+        }
     }
 }

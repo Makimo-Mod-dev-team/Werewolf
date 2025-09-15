@@ -11,6 +11,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraft.commands.arguments.coordinates.Vec3Argument;
+import net.minecraft.world.phys.Vec3;
 
 import static com.makimo.werewolf.Werewolf.MOD_ID;
 
@@ -19,7 +21,7 @@ public class RegisterCommand {
     @SubscribeEvent
     public static void onRegisterWWCommand(RegisterCommandsEvent event) {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("ww")
-            .then(Commands.literal("start")
+            .then(Commands.literal("Start")
                 .executes(context -> {
                     //ここに処理を書く
                     try {
@@ -35,26 +37,50 @@ public class RegisterCommand {
                         context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
                         e.printStackTrace(); // コンソールに詳細出力
                     }
-                    context.getSource().getPlayerOrException().sendSystemMessage(Component.nullToEmpty("[Dev]:Success!"));
+                    context.getSource().getPlayerOrException().sendSystemMessage(Component.nullToEmpty("[Dev]:Success!")); // デバッグ用
                     return Command.SINGLE_SUCCESS;
                 }))
-            .then(Commands.literal("setting")
-                .then(Commands.argument("NumberOfWerewolf", IntegerArgumentType.integer())
-                    .then(Commands.argument("NumberOfFox", IntegerArgumentType.integer())
+            .then(Commands.literal("Setting")
+                .then(Commands.literal("Number")
+                    .then(Commands.argument("NumberOfWerewolf", IntegerArgumentType.integer())
+                        .then(Commands.argument("NumberOfFox", IntegerArgumentType.integer())
+                            .executes(context -> {
+                                try {
+                                    // 引数を変数に格納
+                                    GameManager.number_wolves = IntegerArgumentType.getInteger(context, "NumberOfWerewolf");
+                                    GameManager.number_foxes = IntegerArgumentType.getInteger(context, "NumberOfFox");
+                                } catch (Exception e) {
+                                    context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
+                                    e.printStackTrace(); // コンソールに詳細出力
+                                }
+                                // 確認用にプレイヤーに表示
+                                context.getSource().sendSuccess(
+                                    () -> Component.literal("NumberOfWerewolf=" + GameManager.number_wolves + "NumberOfFox=" + GameManager.number_foxes),
+                                        false
+                                );
+                                return Command.SINGLE_SUCCESS;
+                            }))))
+                .then(Commands.literal("HomePosition")
+                    .then(Commands.argument("pos", Vec3Argument.vec3())
                         .executes(context -> {
                             try {
-                                // 引数を変数に格納
-                                GameManager.number_wolves = IntegerArgumentType.getInteger(context, "NumberOfWerewolf");
-                                GameManager.number_foxes = IntegerArgumentType.getInteger(context, "NumberOfFox");
+                                Vec3 vec = Vec3Argument.getVec3(context, "pos");
+
+                                GameManager.homeX = vec.x;
+                                GameManager.homeY = vec.y;
+                                GameManager.homeZ = vec.z;
+
+                                context.getSource().sendSuccess(
+                                    () -> Component.literal("HomePosition set to (" +
+                                        GameManager.homeX + ", " +
+                                        GameManager.homeY + ", " +
+                                        GameManager.homeZ + ")"),
+                                    false
+                                );
                             } catch (Exception e) {
                                 context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
-                                e.printStackTrace(); // コンソールに詳細出力
+                                e.printStackTrace();
                             }
-                            // 確認用にプレイヤーに表示
-                            context.getSource().sendSuccess(
-                                () -> Component.literal("NumberOfWerewolf=" + GameManager.number_wolves + "NumberOfFox=" + GameManager.number_foxes),
-                                    false
-                            );
                             return Command.SINGLE_SUCCESS;
                         }))));
         event.getDispatcher().register(builder);
