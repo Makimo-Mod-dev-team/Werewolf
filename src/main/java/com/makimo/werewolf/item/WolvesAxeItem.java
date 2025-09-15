@@ -42,7 +42,7 @@ public class WolvesAxeItem extends Item {
         if (level.isClientSide) {
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
-        Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(level, player, 3);
+        Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 3);
         if (targetPlayer != null) {
             targetPlayer.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
                 if (cap.getRole() != Role.FOX) {

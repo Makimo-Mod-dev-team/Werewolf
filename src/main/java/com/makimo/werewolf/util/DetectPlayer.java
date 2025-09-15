@@ -8,7 +8,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class DetectPlayer {
-    public static Player DetectPlayerFromLayCast(Level level, Player player, int dis) {
+    public static Player DetectPlayerFromLayCast(Player player, int dis) {
         // プレイヤーの視線の位置
         Vec3 eyePos = player.getEyePosition();
 

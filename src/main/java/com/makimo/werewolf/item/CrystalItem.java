@@ -59,7 +59,7 @@ public class CrystalItem extends Item {// 占いアイテム
         if (level.isClientSide) {
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
-        Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(level, player, 3);
+        Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 3);
         if (targetPlayer != null) {
             ItemStack stack = player.getItemInHand(hand);
             divination(targetPlayer);
