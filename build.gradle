@@ -3,6 +3,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.+'
 }
 
 version = mod_version
@@ -54,11 +55,15 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-
+    maven {
+        url = "https://cursemaven.com"
+    }
 }
 
 dependencies {
+    annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    implementation fg.deobf("curse.maven:gravity-api-forge-1283915:6657449")
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -90,6 +95,11 @@ tasks.named('jar', Jar).configure {
     }
     finalizedBy 'reobfJar'
 }
+
+mixin {
+    add sourceSets.main, "werewolf.refmap.json"
+}
+
 publishing {
     publications {
         register('mavenJava', MavenPublication) {

@@ -1,5 +1,6 @@
 package com.makimo.werewolf.event;
 
+import com.makimo.werewolf.capability.GravityCapabilityProvider;
 import com.makimo.werewolf.capability.RoleCapabilityProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +18,7 @@ public class CapabilityEvents {
     public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof ServerPlayer) {
             event.addCapability(new ResourceLocation(MOD_ID, "role"), new RoleCapabilityProvider());
+            event.addCapability(new ResourceLocation(MOD_ID, "gravity"), new GravityCapabilityProvider());
         }
     }
 }
