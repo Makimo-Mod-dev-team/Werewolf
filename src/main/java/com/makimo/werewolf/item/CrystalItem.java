@@ -84,7 +84,8 @@ public class CrystalItem extends Item {// 占いアイテム
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.literal("プレイヤーに右クリックすると役職をかくにんできる"));
+        tooltip.add(Component.literal("プレイヤーに右クリックすると"));
+        tooltip.add(Component.literal("役職を確認できる"));
         tooltip.add(Component.literal("価格：1").withStyle(ChatFormatting.GOLD));
 
         super.appendHoverText(stack, level, tooltip, flag);
