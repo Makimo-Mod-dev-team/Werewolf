@@ -28,10 +28,12 @@ import java.util.*;
 public class GameManager {
     // ゲーム中の陣営リスト作製
     private static final Set<UUID> wolves = new HashSet<>();
+    private static final Set<UUID> lunatics = new HashSet<>();
     private static final Set<UUID> villagers = new HashSet<>();
     private static final Set<UUID> fox = new HashSet<>();
     // 変数作製
     public static int number_wolves = 1;
+    public static int number_lunatics = 1;
     public static int number_foxes = 1;
     public static String winner = null;
     private static boolean monitoring = false;
@@ -39,6 +41,7 @@ public class GameManager {
 
     // 監視開始前のスナップショットリスト
     private static List<String> snapshotWolves;
+    private static List<String> snapshotLunatics;
     private static List<String> snapshotVillagers;
     private static List<String> snapshotFox;
 
@@ -65,7 +68,10 @@ public class GameManager {
             if (i < number_wolves) {
                 choose = Role.WEREWOLF;
                 wolves.add(player.getUUID());
-            } else if (i < number_wolves + number_foxes) {
+            } else if (i < number_wolves + number_lunatics) {
+                choose = Role.LUNATIC;
+                lunatics.add(player.getUUID());
+            } else if (i < number_wolves + number_lunatics + number_foxes) {
                 choose = Role.FOX;
                 fox.add(player.getUUID());
             } else {
@@ -83,8 +89,11 @@ public class GameManager {
             player.sendSystemMessage(Component.literal("あなたの陣営 : " + getRoleDisplayName(role)));
         }
 
+        // 時間を昼に
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set day");
         // リストをスナップショットリストに保存
         snapshotWolves = getPlayerNamesList(server, wolves);
+        snapshotLunatics = getPlayerNamesList(server, lunatics);
         snapshotVillagers = getPlayerNamesList(server, villagers);
         snapshotFox = getPlayerNamesList(server, fox);
 
@@ -171,7 +180,8 @@ public class GameManager {
             player.sendSystemMessage(Component.literal("======= ゲーム終了 ======="));
             player.sendSystemMessage(Component.literal("勝者 : " + winner));
             // 保存しておいたスナップショットを表示
-            player.sendSystemMessage(Component.literal("人狼陣営 : " + snapshotWolves).withStyle(ChatFormatting.RED));
+            player.sendSystemMessage(Component.literal("人狼陣営・人狼 : " + snapshotWolves).withStyle(ChatFormatting.RED));
+            player.sendSystemMessage(Component.literal("人狼陣営・狂人 : " + snapshotLunatics).withStyle(ChatFormatting.RED));
             player.sendSystemMessage(Component.literal("村人陣営 : " + snapshotVillagers).withStyle(ChatFormatting.GREEN));
             player.sendSystemMessage(Component.literal("妖狐陣営 : " + snapshotFox).withStyle(ChatFormatting.LIGHT_PURPLE));
             player.sendSystemMessage(Component.literal("========================"));
@@ -188,6 +198,7 @@ public class GameManager {
 
         // リストリセット
         wolves.clear();
+        lunatics.clear();
         villagers.clear();
         fox.clear();
         winner = null;
@@ -207,7 +218,8 @@ public class GameManager {
     // Roleから表示文字列を取得
     public static String getRoleDisplayName(Role role) {
         return switch (role) {
-            case WEREWOLF -> "人狼陣営";
+            case WEREWOLF -> "人狼陣営・人狼";
+            case LUNATIC -> "人狼陣営・狂人";
             case VILLAGE -> "村人陣営";
             case FOX -> "妖狐陣営";
             default -> "プレイヤー"; // たぶんいらない

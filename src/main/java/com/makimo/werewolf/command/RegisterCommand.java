@@ -43,23 +43,24 @@ public class RegisterCommand {
             .then(Commands.literal("setting")
                 .then(Commands.literal("Number")
                     .then(Commands.argument("NumberOfWerewolf", IntegerArgumentType.integer())
-                        .then(Commands.argument("NumberOfFox", IntegerArgumentType.integer())
-                            .executes(context -> {
-                                try {
-                                    // 引数を変数に格納
-                                    GameManager.number_wolves = IntegerArgumentType.getInteger(context, "NumberOfWerewolf");
-                                    GameManager.number_foxes = IntegerArgumentType.getInteger(context, "NumberOfFox");
-                                } catch (Exception e) {
-                                    context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
-                                    e.printStackTrace(); // コンソールに詳細出力
-                                }
-                                // 確認用にプレイヤーに表示
-                                context.getSource().sendSuccess(
-                                    () -> Component.literal("NumberOfWerewolf=" + GameManager.number_wolves + "NumberOfFox=" + GameManager.number_foxes),
-                                        false
-                                );
-                                return Command.SINGLE_SUCCESS;
-                            }))))
+                        .then(Commands.argument("NumberOfLunatic", IntegerArgumentType.integer())
+                            .then(Commands.argument("NumberOfFox", IntegerArgumentType.integer())
+                                .executes(context -> {
+                                    try {
+                                        // 引数を変数に格納
+                                        GameManager.number_wolves = IntegerArgumentType.getInteger(context, "NumberOfWerewolf");
+                                        GameManager.number_lunatics = IntegerArgumentType.getInteger(context, "NumberOfLunatic");
+                                        GameManager.number_foxes = IntegerArgumentType.getInteger(context, "NumberOfFox");
+                                    } catch (Exception e) {
+                                        context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
+                                        e.printStackTrace(); // コンソールに詳細出力
+                                    }
+                                    // 確認用にプレイヤーに表示
+                                    context.getSource().sendSuccess(() -> Component.literal("NumberOfWerewolf=" + GameManager.number_wolves), false);
+                                    context.getSource().sendSuccess(() -> Component.literal("NumberOfLunatic=" + GameManager.number_lunatics), false);
+                                    context.getSource().sendSuccess(() -> Component.literal("NumberOfFox=" + GameManager.number_foxes), false);
+                                    return Command.SINGLE_SUCCESS;
+                            })))))
                 .then(Commands.literal("HomePosition")
                     .then(Commands.argument("pos", Vec3Argument.vec3())
                         .executes(context -> {
@@ -82,7 +83,8 @@ public class RegisterCommand {
                                 e.printStackTrace();
                             }
                             return Command.SINGLE_SUCCESS;
-                        }))));
+                        })))
+            );
         event.getDispatcher().register(builder);
     }
 }
