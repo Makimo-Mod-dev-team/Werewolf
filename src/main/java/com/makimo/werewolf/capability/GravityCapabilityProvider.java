@@ -1,6 +1,6 @@
 package com.makimo.werewolf.capability;
 
-import com.makimo.werewolf.registry.CapabilityRegister;
+import com.makimo.werewolf.registry.CapabilityRegistry;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.Capability;
@@ -16,7 +16,7 @@ public class GravityCapabilityProvider implements ICapabilitySerializable<Compou
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        return cap == CapabilityRegister.GRAVITY_CAP ? optional.cast() : LazyOptional.empty();
+        return cap == CapabilityRegistry.GRAVITY_CAP ? optional.cast() : LazyOptional.empty();
     }
 
     @Override

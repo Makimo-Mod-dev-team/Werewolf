@@ -1,7 +1,7 @@
 package com.makimo.werewolf.game;
 
 import com.makimo.werewolf.capability.Role;
-import com.makimo.werewolf.registry.CapabilityRegister;
+import com.makimo.werewolf.registry.CapabilityRegistry;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -87,7 +87,7 @@ public class GameManager {
                 villagers.add(player.getUUID());
             }
             Role role = choose;
-            player.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
+            player.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
                 cap.setRole(role);
             });
             // "/gamemode adventure @a"
@@ -120,7 +120,7 @@ public class GameManager {
 
         // --- アクションバーに自陣営を表示 ---
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            Role role = player.getCapability(CapabilityRegister.ROLE_CAP)
+            Role role = player.getCapability(CapabilityRegistry.ROLE_CAP)
                     .map(cap -> cap.getRole())
                     .orElse(Role.VILLAGE);
             // 第二引数 true でアクションバー表示

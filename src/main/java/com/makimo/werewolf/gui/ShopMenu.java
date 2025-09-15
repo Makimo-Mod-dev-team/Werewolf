@@ -1,10 +1,9 @@
 package com.makimo.werewolf.gui;
 
-import com.makimo.werewolf.registry.CapabilityRegister;
+import com.makimo.werewolf.registry.CapabilityRegistry;
 import com.makimo.werewolf.registry.ItemRegistry;
 import com.makimo.werewolf.registry.MenuRegistry;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -14,9 +13,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
 public class ShopMenu extends AbstractContainerMenu {
     private final Container shopContainer;
@@ -63,7 +59,7 @@ public class ShopMenu extends AbstractContainerMenu {
 
         // 商品がスロットにないならセットする
         if (this.player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
+            serverPlayer.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
                 switch (cap.getRole()) {
                     case VILLAGE -> villagerSlot();
                     case WEREWOLF -> werewolfSlot();

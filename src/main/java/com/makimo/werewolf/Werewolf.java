@@ -1,6 +1,7 @@
 package com.makimo.werewolf;
 
 import com.makimo.werewolf.registry.CreativeTabRegistry;
+import com.makimo.werewolf.registry.EntityRegistry;
 import com.makimo.werewolf.registry.ItemRegistry;
 import com.makimo.werewolf.registry.MenuRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -17,5 +18,6 @@ public class Werewolf {
         CreativeTabRegistry.register(modEventBus); // クリエイティブタブの登録
         ItemRegistry.register(modEventBus);        // アイテムの登録
         MenuRegistry.register(modEventBus);        // メニューの登録
+        EntityRegistry.register(modEventBus);
     }
 }

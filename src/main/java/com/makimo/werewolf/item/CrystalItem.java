@@ -1,7 +1,7 @@
 package com.makimo.werewolf.item;
 
 import com.makimo.werewolf.capability.Role;
-import com.makimo.werewolf.registry.CapabilityRegister;
+import com.makimo.werewolf.registry.CapabilityRegistry;
 import com.makimo.werewolf.util.DetectPlayer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -28,7 +28,7 @@ public class CrystalItem extends Item {// 占いアイテム
     }
 
     public void divination(Player player, Player target) {
-        target.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
+        target.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
             String displayText = switch (cap.getRole()) {
                 case WEREWOLF -> "人狼陣営";
                 case LUNATIC, VILLAGE -> "村人陣営";
