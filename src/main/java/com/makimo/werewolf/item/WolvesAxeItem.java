@@ -55,7 +55,7 @@ public class WolvesAxeItem extends Item {
                     Player targetPlayer = (Player) targetEntity;
                     AtomicBoolean kill = new AtomicBoolean(false);
                     targetPlayer.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
-                        if (cap.getRole() == Role.VILLAGE) {
+                        if (cap.getRole() != Role.FOX) {
                             targetPlayer.kill();
                             kill.set(true);
                         }
