@@ -4,9 +4,13 @@ import com.makimo.werewolf.capability.Role;
 import com.makimo.werewolf.registry.CapabilityRegister;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,13 +21,14 @@ import java.util.*;
 
 @Mod.EventBusSubscriber
 public class GameManager {
+    // ゲーム中の陣営リスト作製
     private static final Set<UUID> wolves = new HashSet<>();
     private static final Set<UUID> villagers = new HashSet<>();
     private static final Set<UUID> fox = new HashSet<>();
+    // 変数作製
     public static int number_wolves = 1;
     public static int number_foxes = 1;
     public static String winner = null;
-
     private static boolean monitoring = false;
 
     // 監視開始前のスナップショットリスト
@@ -31,6 +36,7 @@ public class GameManager {
     private static List<String> snapshotVillagers;
     private static List<String> snapshotFox;
 
+    //
     public static void assignRoles(MinecraftServer server) {
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
         if (players.isEmpty()) return;
@@ -53,10 +59,11 @@ public class GameManager {
             player.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
                 cap.setRole(role);
             });
-            player.sendSystemMessage(Component.literal("あなたの役職は: " + role.name()));
+            sendTitleToPlayer(player, "Game Start", "あなたの陣営 : " + getRoleDisplayName(role));
+            player.sendSystemMessage(Component.literal("あなたの陣営 : " + getRoleDisplayName(role)));
         }
 
-        // 監視開始前にリストをスナップショットとして保存
+        // リストをスナップショットリストに保存
         snapshotWolves = getPlayerNamesList(server, wolves);
         snapshotVillagers = getPlayerNamesList(server, villagers);
         snapshotFox = getPlayerNamesList(server, fox);
@@ -67,9 +74,18 @@ public class GameManager {
     // 毎tick監視
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (!monitoring || event.phase != TickEvent.Phase.END) return;
+        if (!monitoring || event.phase != TickEvent.Phase.END) return; // tick開始時にのみ判断
 
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        // --- アクションバーに自陣営を表示 ---
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            Role role = player.getCapability(CapabilityRegister.ROLE_CAP)
+                    .map(cap -> cap.getRole())
+                    .orElse(Role.VILLAGE);
+            // 第二引数 true でアクションバー表示
+            player.displayClientMessage(Component.literal("あなたの陣営 : " + getRoleDisplayName(role)), true);
+        }
 
         if (wolves.isEmpty() || villagers.isEmpty()) {
             if (wolves.isEmpty() && fox.isEmpty()) {
@@ -77,7 +93,7 @@ public class GameManager {
             } else if (villagers.isEmpty() && fox.isEmpty()) {
                 winner = "人狼陣営";
             } else if (!fox.isEmpty()) {
-                winner = "妖狐";
+                winner = "妖狐陣営";
             } else {
                 winner = "エラー(条件外)";
             }
@@ -99,33 +115,56 @@ public class GameManager {
     private static void stopMonitoringAndAnnounce(MinecraftServer server) {
         monitoring = false; // 監視停止命令
         if (server == null) return;
-
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            player.sendSystemMessage(Component.literal("===== ゲーム終了 ====="));
-            player.sendSystemMessage(Component.literal("勝者: " + winner));
-
+            player.sendSystemMessage(Component.literal("======= ゲーム終了 ======="));
+            player.sendSystemMessage(Component.literal("勝者 : " + winner));
             // 保存しておいたスナップショットを表示
-            player.sendSystemMessage(Component.literal("Wolves: " + snapshotWolves));
-            player.sendSystemMessage(Component.literal("Villagers: " + snapshotVillagers));
-            player.sendSystemMessage(Component.literal("Fox: " + snapshotFox));
+            player.sendSystemMessage(Component.literal("人狼陣営 : " + snapshotWolves));
+            player.sendSystemMessage(Component.literal("村人陣営 : " + snapshotVillagers));
+            player.sendSystemMessage(Component.literal("妖狐陣営 : " + snapshotFox));
+            player.sendSystemMessage(Component.literal("========================"));
+            // タイトル表示
+            sendTitleToPlayer(player, "勝者 : " + winner, "");
+            // 終了サウンドを鳴らす
+            player.playNotifySound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.MASTER, 1.0F, 1.0F);
         }
 
-        // リセット
+        // リストリセット
         wolves.clear();
         villagers.clear();
         fox.clear();
         winner = null;
     }
 
+    // プレイヤーにタイトル＋サブタイトルを送信
+    public static void sendTitleToPlayer(ServerPlayer player, String title, String subtitle) {
+        // タイトルの送信
+        player.connection.send(new ClientboundSetTitleTextPacket(Component.literal(title)));
+
+        // サブタイトルの送信
+        player.connection.send(new ClientboundSetSubtitleTextPacket(Component.literal(subtitle)));
+    }
+
+    // Roleから表示文字列を取得
+    private static String getRoleDisplayName(Role role) {
+        return switch (role) {
+            case WEREWOLF -> "人狼陣営";
+            case VILLAGE -> "村人陣営";
+            case FOX -> "妖狐陣営";
+            default -> "プレイヤー"; // たぶんいらない
+        };
+    }
+
     private static List<String> getPlayerNamesList(MinecraftServer server, Set<UUID> uuids) {
         List<String> names = new ArrayList<>();
         for (UUID uuid : uuids) {
+            // オンラインプレイヤー取得
             ServerPlayer player = server.getPlayerList().getPlayer(uuid);
             if (player != null) {
                 names.add(player.getName().getString());
                 continue;
             }
-            // オフラインプレイヤーも取得
+            // オフラインプレイヤー取得
             Optional<GameProfile> profile = server.getProfileCache().get(uuid);
             if (profile.isPresent()) {
                 names.add(profile.get().getName());

@@ -29,7 +29,8 @@ public class RegisterCommand {
                             return 0;
                         }
 
-                        GameManager.assignRoles(server);
+                        GameManager.assignRoles(server); // 開始処理命令
+
                     } catch (Exception e) {
                         context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
                         e.printStackTrace(); // コンソールに詳細出力
