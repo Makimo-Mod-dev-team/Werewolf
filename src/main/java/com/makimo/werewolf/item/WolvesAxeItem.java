@@ -96,9 +96,8 @@ public class WolvesAxeItem extends Item {
             );
             stack.shrink(1);
             player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
-        } else {
-            player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 20 * 5);
         }
+        player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 20 * 5);
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
     }
 }
