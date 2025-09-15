@@ -57,7 +57,23 @@ public class CrystalItem extends Item {// 占いアイテム
                 if (targetEntity instanceof Player) {
                     Player targetPlayer = (Player) targetEntity;
                     targetPlayer.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
-                        player.sendSystemMessage(Component.literal("占い結果：" + targetPlayer.getDisplayName().getString() + "は" + cap.getRole().name()));
+                        String roleName = cap.getRole().name();
+                        // Roleごとに表示文字を変更
+                        String displayText = switch (cap.getRole()) {
+                            case WEREWOLF -> "人狼陣営";
+                            case VILLAGE -> "村人陣営";
+                            case FOX -> "妖狐陣営";
+                            default -> "プレイヤー";
+                        };
+
+                        // 使用者にのみ結果をチャット表示
+                        player.sendSystemMessage(Component.literal("占い結果：" + targetPlayer.getDisplayName().getString() + "は" + displayText));
+
+                        // 妖狐だった場合は占われたプレイヤーをkill
+                        if (cap.getRole() == Role.FOX) {
+                            targetPlayer.hurt(player.level().damageSources().playerAttack(player), Float.MAX_VALUE);
+                            player.sendSystemMessage(Component.literal(targetPlayer.getDisplayName().getString() + "は妖狐だった"));
+                        }
                     });
                     return true; // 最初の見つかったプレイヤーで終了
                 }
@@ -68,12 +84,17 @@ public class CrystalItem extends Item {// 占いアイテム
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide) {
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
         if (detect_player(level, player)) {
-            return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
+            // 占い成功時にアイテムを1つ消費
+            stack.shrink(1);
+            player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
+            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         } else {
+            player.sendSystemMessage(Component.literal("占えるプレイヤーがいませんでした。"));
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
     }

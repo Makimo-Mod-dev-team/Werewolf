@@ -9,7 +9,6 @@ import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.event.TickEvent;
@@ -17,6 +16,11 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraft.world.BossEvent;
+import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.world.BossEvent.BossBarColor;
+import net.minecraft.world.BossEvent.BossBarOverlay;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.*;
 
@@ -37,6 +41,17 @@ public class GameManager {
     private static List<String> snapshotWolves;
     private static List<String> snapshotVillagers;
     private static List<String> snapshotFox;
+
+    // 昼夜サイクル関連
+    public static int cycleDayTicks = 2400;     // 昼の長さ（tick単位、20tick=1秒）
+    public static int cycleNightTicks = 2400;   // 夜の長さ
+    public static boolean isDay = true;         // 現在昼か夜か
+    public static int cycleTimer = 0;           // 残りtickカウント
+    public static boolean isGameRunning = false; // ゲーム中かどうか
+
+    // bossbar
+    public static final ServerBossEvent timeBossBar =
+            new ServerBossEvent(Component.literal("昼 残り時間"), BossBarColor.YELLOW, BossBarOverlay.PROGRESS);
 
     public static void assignRoles(MinecraftServer server) {
         clearAllInventories(server); // 全員のインベントリをクリア
@@ -61,6 +76,7 @@ public class GameManager {
             player.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
                 cap.setRole(role);
             });
+            timeBossBar.addPlayer(player);
             sendTitleToPlayer(player, "Game Start", "あなたの陣営 : " + getRoleDisplayName(role));
             player.sendSystemMessage(Component.literal("あなたの陣営 : " + getRoleDisplayName(role)));
         }
@@ -71,6 +87,9 @@ public class GameManager {
         snapshotFox = getPlayerNamesList(server, fox);
 
         monitoring = true; // 監視開始命令
+        isDay = true;
+        cycleTimer = cycleDayTicks;
+        isGameRunning = true;
     }
 
     // 毎tick監視
@@ -101,6 +120,28 @@ public class GameManager {
             }
             stopMonitoringAndAnnounce(server);
         }
+        // BossBarの処理
+        if (server == null) return;
+        if (!GameManager.isGameRunning) return;
+        GameManager.cycleTimer--; // 1tick減らす
+        if (GameManager.cycleTimer <= 0) {
+            // 昼夜切替
+            GameManager.isDay = !GameManager.isDay;
+            GameManager.cycleTimer = GameManager.isDay ? GameManager.cycleDayTicks : GameManager.cycleNightTicks;
+
+            // 時間を強制セット
+            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(),
+                    GameManager.isDay ? "time set day" : "time set midnight");
+
+            // bossbar 表示文字更新
+            GameManager.timeBossBar.setName(Component.literal(GameManager.isDay ? "昼 残り時間" : "夜 残り時間"));
+            GameManager.timeBossBar.setColor(GameManager.isDay ? BossEvent.BossBarColor.YELLOW : BossEvent.BossBarColor.PURPLE);
+        }
+
+        // プログレス更新（必ず毎 tick 設定）
+        float progress = (float) GameManager.cycleTimer /
+                (GameManager.isDay ? GameManager.cycleDayTicks : GameManager.cycleNightTicks);
+        GameManager.timeBossBar.setProgress(progress);
     }
 
     // プレイヤー死亡時処理
@@ -134,6 +175,7 @@ public class GameManager {
             //player.teleportTo(GameManager.homeX, GameManager.homeY, GameManager.homeZ);
             // "/gamemode adventure @a"
             player.setGameMode(GameType.ADVENTURE);
+            GameManager.timeBossBar.removePlayer(player);
         }
 
         // リストリセット
@@ -141,6 +183,7 @@ public class GameManager {
         villagers.clear();
         fox.clear();
         winner = null;
+        GameManager.isGameRunning = false;
         // インベントリをクリア
         clearAllInventories(server);
     }
