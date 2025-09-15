@@ -21,7 +21,7 @@ public class RegisterCommand {
     @SubscribeEvent
     public static void onRegisterWWCommand(RegisterCommandsEvent event) {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("ww")
-            .then(Commands.literal("Start")
+            .then(Commands.literal("start")
                 .executes(context -> {
                     //ここに処理を書く
                     try {
@@ -40,7 +40,7 @@ public class RegisterCommand {
                     context.getSource().getPlayerOrException().sendSystemMessage(Component.nullToEmpty("[Dev]:Success!")); // デバッグ用
                     return Command.SINGLE_SUCCESS;
                 }))
-            .then(Commands.literal("Setting")
+            .then(Commands.literal("setting")
                 .then(Commands.literal("Number")
                     .then(Commands.argument("NumberOfWerewolf", IntegerArgumentType.integer())
                         .then(Commands.argument("NumberOfFox", IntegerArgumentType.integer())

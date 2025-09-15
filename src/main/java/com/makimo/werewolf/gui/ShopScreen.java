@@ -23,5 +23,6 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         guiGraphics.blit(BG_TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, this.imageWidth, this.imageHeight);
+        this.renderTooltip(guiGraphics, mouseX, mouseY);
     }
 }

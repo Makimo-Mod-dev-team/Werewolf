@@ -1,9 +1,11 @@
 package com.makimo.werewolf.gui;
 
+import com.makimo.werewolf.registry.CapabilityRegister;
 import com.makimo.werewolf.registry.ItemRegistry;
 import com.makimo.werewolf.registry.MenuRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,8 +20,10 @@ import net.minecraftforge.items.SlotItemHandler;
 
 public class ShopMenu extends AbstractContainerMenu {
     private final Container shopContainer;
+    private Player player;
     public ShopMenu(int id, Inventory playerInv) {
         super(MenuRegistry.SHOP_MENU.get(), id);
+        this.player = playerInv.player;
 
         this.shopContainer = new SimpleContainer(1) {
             @Override
@@ -28,7 +32,7 @@ public class ShopMenu extends AbstractContainerMenu {
             }
         };
 
-        this.addSlot(new ShopSlot(this.shopContainer, 0, 80, 35));
+        this.addSlot(new Slot(this.shopContainer, 0, 80, 35));
 
         // プレイヤーインベントリスロットとか追加
         for (int row = 0; row < 3; ++row) {
@@ -45,14 +49,26 @@ public class ShopMenu extends AbstractContainerMenu {
         this(id, playerInv); // 使わなければこれでOK
     }
 
+    public void villagerSlot() {
+        this.shopContainer.setItem(0, new ItemStack(ItemRegistry.CRYSTAL.get()));
+    }
+
+    public void werewolfSlot() {
+        this.shopContainer.setItem(0, new ItemStack(ItemRegistry.CRYSTAL.get()));
+    }
+
     @Override
     public void broadcastChanges() {
         super.broadcastChanges();
 
         // 商品がスロットにないならセットする
-        Slot shopSlot = this.slots.get(0);
-        if (shopSlot.getItem().isEmpty()) {
-            shopSlot.set(new ItemStack(ItemRegistry.CRYSTAL.get(), 1));
+        if (this.player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.getCapability(CapabilityRegister.ROLE_CAP).ifPresent(cap -> {
+                switch (cap.getRole()) {
+                    case VILLAGE -> villagerSlot();
+                    case WEREWOLF -> werewolfSlot();
+                }
+            });
         }
     }
 
