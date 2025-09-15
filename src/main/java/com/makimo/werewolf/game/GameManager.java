@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.Difficulty;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.event.TickEvent;
@@ -28,10 +29,12 @@ import java.util.*;
 public class GameManager {
     // ゲーム中の陣営リスト作製
     private static final Set<UUID> wolves = new HashSet<>();
+    private static final Set<UUID> lunatics = new HashSet<>();
     private static final Set<UUID> villagers = new HashSet<>();
     private static final Set<UUID> fox = new HashSet<>();
     // 変数作製
     public static int number_wolves = 1;
+    public static int number_lunatics = 1;
     public static int number_foxes = 1;
     public static String winner = null;
     private static boolean monitoring = false;
@@ -39,6 +42,7 @@ public class GameManager {
 
     // 監視開始前のスナップショットリスト
     private static List<String> snapshotWolves;
+    private static List<String> snapshotLunatics;
     private static List<String> snapshotVillagers;
     private static List<String> snapshotFox;
 
@@ -55,6 +59,7 @@ public class GameManager {
 
     public static void assignRoles(MinecraftServer server) {
         clearAllInventories(server); // 全員のインベントリをクリア
+        DifficultyChanger.setHardDifficulty(); // DifficultyをHardに
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
         if (players.isEmpty()) return;
         Collections.shuffle(players);
@@ -65,7 +70,10 @@ public class GameManager {
             if (i < number_wolves) {
                 choose = Role.WEREWOLF;
                 wolves.add(player.getUUID());
-            } else if (i < number_wolves + number_foxes) {
+            } else if (i < number_wolves + number_lunatics) {
+                choose = Role.LUNATIC;
+                lunatics.add(player.getUUID());
+            } else if (i < number_wolves + number_lunatics + number_foxes) {
                 choose = Role.FOX;
                 fox.add(player.getUUID());
             } else {
@@ -83,8 +91,11 @@ public class GameManager {
             player.sendSystemMessage(Component.literal("あなたの陣営 : " + getRoleDisplayName(role)));
         }
 
+        // 時間を昼に
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set day");
         // リストをスナップショットリストに保存
         snapshotWolves = getPlayerNamesList(server, wolves);
+        snapshotLunatics = getPlayerNamesList(server, lunatics);
         snapshotVillagers = getPlayerNamesList(server, villagers);
         snapshotFox = getPlayerNamesList(server, fox);
 
@@ -171,7 +182,8 @@ public class GameManager {
             player.sendSystemMessage(Component.literal("======= ゲーム終了 ======="));
             player.sendSystemMessage(Component.literal("勝者 : " + winner));
             // 保存しておいたスナップショットを表示
-            player.sendSystemMessage(Component.literal("人狼陣営 : " + snapshotWolves).withStyle(ChatFormatting.RED));
+            player.sendSystemMessage(Component.literal("人狼陣営・人狼 : " + snapshotWolves).withStyle(ChatFormatting.RED));
+            player.sendSystemMessage(Component.literal("人狼陣営・狂人 : " + snapshotLunatics).withStyle(ChatFormatting.RED));
             player.sendSystemMessage(Component.literal("村人陣営 : " + snapshotVillagers).withStyle(ChatFormatting.GREEN));
             player.sendSystemMessage(Component.literal("妖狐陣営 : " + snapshotFox).withStyle(ChatFormatting.LIGHT_PURPLE));
             player.sendSystemMessage(Component.literal("========================"));
@@ -188,12 +200,16 @@ public class GameManager {
 
         // リストリセット
         wolves.clear();
+        lunatics.clear();
         villagers.clear();
         fox.clear();
+        // 変数リセット
         winner = null;
         GameManager.isGameRunning = false;
         // インベントリをクリア
         clearAllInventories(server);
+        // DifficultyをPeacefulに
+        DifficultyChanger.setPeacefulDifficulty();
     }
 
     // プレイヤーにタイトル＋サブタイトルを送信
@@ -207,7 +223,8 @@ public class GameManager {
     // Roleから表示文字列を取得
     public static String getRoleDisplayName(Role role) {
         return switch (role) {
-            case WEREWOLF -> "人狼陣営";
+            case WEREWOLF -> "人狼陣営・人狼";
+            case LUNATIC -> "人狼陣営・狂人";
             case VILLAGE -> "村人陣営";
             case FOX -> "妖狐陣営";
             default -> "プレイヤー"; // たぶんいらない
@@ -240,6 +257,22 @@ public class GameManager {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             player.getInventory().clearContent();
             player.inventoryMenu.broadcastChanges(); // クライアントに更新通知
+        }
+    }
+
+    // ゲームの難易度を変更
+    public class DifficultyChanger {
+        public static void setPeacefulDifficulty(){
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if (server != null) {
+                server.setDifficulty(Difficulty.PEACEFUL, true); // trueで即座にプライヤーへ反映
+            }
+        }
+        public static void setHardDifficulty() {
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if (server != null) {
+                server.setDifficulty(Difficulty.HARD, true); // trueで即座にプレイヤーへ反映
+            }
         }
     }
 }

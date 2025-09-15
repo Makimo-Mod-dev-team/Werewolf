@@ -61,6 +61,7 @@ public class CrystalItem extends Item {// 占いアイテム
                         // Roleごとに表示文字を変更
                         String displayText = switch (cap.getRole()) {
                             case WEREWOLF -> "人狼陣営";
+                            case LUNATIC -> "村人陣営";
                             case VILLAGE -> "村人陣営";
                             case FOX -> "妖狐陣営";
                             default -> "プレイヤー";
