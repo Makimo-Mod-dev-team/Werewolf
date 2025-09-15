@@ -58,6 +58,14 @@ repositories {
     maven {
         url = "https://cursemaven.com"
     }
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroupByRegex("software\\.bernie.*")
+            includeGroup("com.eliotlash.mclib")
+        }
+    }
 }
 
 dependencies {
@@ -66,6 +74,11 @@ dependencies {
     implementation fg.deobf("curse.maven:gravity-api-forge-1283915:6657449")
     implementation fg.deobf("curse.maven:pehkui-319596:5393101")
     implementation fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:6970299")
+    implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:4.7.4")
+    implementation("com.eliotlash.mclib:mclib:20")
+    implementation fg.deobf("curse.maven:caelus-308989:5281700")
+    implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
+    implementation fg.deobf("curse.maven:curios-309927:6418456")
 }
 
 tasks.named('processResources', ProcessResources).configure {
