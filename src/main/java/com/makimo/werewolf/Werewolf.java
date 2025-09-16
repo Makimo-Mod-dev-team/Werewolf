@@ -1,5 +1,6 @@
 package com.makimo.werewolf;
 
+import com.makimo.werewolf.network.NetworkHandler;
 import com.makimo.werewolf.registry.CreativeTabRegistry;
 import com.makimo.werewolf.registry.EntityRegistry;
 import com.makimo.werewolf.registry.ItemRegistry;
@@ -21,5 +22,6 @@ public class Werewolf {
         MenuRegistry.register(modEventBus);        // メニューの登録
         EntityRegistry.register(modEventBus);
         Messages.register();
+        NetworkHandler.init();
     }
 }

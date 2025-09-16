@@ -20,6 +20,7 @@ public class CreativeTabRegistry { // クリエイティブタブを登録する
             .icon(() -> new ItemStack(ItemRegistry.SHOP_ITEM.get()))
             .displayItems((enabledFeatures, entries) -> {
                 entries.accept(ItemRegistry.SHOP_ITEM.get());
+                entries.accept(ItemRegistry.CANDLE_ITEM.get());
                 entries.accept(ItemRegistry.COIN.get());
                 entries.accept(ItemRegistry.CRYSTAL.get());
                 entries.accept(ItemRegistry.WOLVES_AXE.get());

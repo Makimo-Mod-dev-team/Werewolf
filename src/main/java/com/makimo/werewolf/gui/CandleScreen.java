@@ -1,9 +1,15 @@
 package com.makimo.werewolf.gui;
 
+import com.makimo.werewolf.capability.Role;
+import com.makimo.werewolf.network.CandleCheckPacket;
+import com.makimo.werewolf.network.NetworkHandler;
+import com.makimo.werewolf.registry.CapabilityRegistry;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ServerPacketListener;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.client.gui.components.Button;
 import net.minecraftforge.api.distmarker.Dist;
@@ -12,6 +18,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.List;
 
 import static com.makimo.werewolf.Werewolf.MOD_ID;
+import static com.makimo.werewolf.capability.Role.*;
 
 @OnlyIn(Dist.CLIENT)
 public class CandleScreen extends AbstractContainerScreen<CandleMenu> {
@@ -46,8 +53,10 @@ public class CandleScreen extends AbstractContainerScreen<CandleMenu> {
 
             this.addRenderableWidget(Button.builder(Component.literal(playerName), (button) -> {
                 this.getMenu().player.sendSystemMessage(Component.literal(playerName + "の霊を調べます。"));
-                // ここに霊媒処理
-            }).pos(buttonX, buttonY).width(buttonWidth).build());
+                // 霊媒処理
+                NetworkHandler.INSTANCE.sendToServer(new CandleCheckPacket(playerName));
+            })
+            .pos(buttonX, buttonY).width(buttonWidth).build());
         }
     }
 

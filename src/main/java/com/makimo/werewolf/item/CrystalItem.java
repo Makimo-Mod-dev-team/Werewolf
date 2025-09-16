@@ -48,7 +48,7 @@ public class CrystalItem extends Item {// 占いアイテム
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.literal("プレイヤーに右クリックすると"));
+        tooltip.add(Component.literal("プレイヤーの方向を向いて右クリックすると"));
         tooltip.add(Component.literal("役職を確認できる"));
         tooltip.add(Component.literal("価格：1").withStyle(ChatFormatting.GOLD));
 
@@ -62,7 +62,7 @@ public class CrystalItem extends Item {// 占いアイテム
         if (level.isClientSide) {
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         }
-        Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 3);
+        Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 10);
         if (targetPlayer != null) {
             divination(player, targetPlayer);
             stack.shrink(1);
