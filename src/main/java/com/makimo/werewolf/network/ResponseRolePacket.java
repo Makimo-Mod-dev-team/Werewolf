@@ -8,6 +8,8 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+import static com.makimo.werewolf.capability.Role.*;
+
 public record ResponseRolePacket(String name, String role) {
     public static void encode(ResponseRolePacket msg, FriendlyByteBuf buf) {
         buf.writeUtf(msg.name);
@@ -22,6 +24,12 @@ public record ResponseRolePacket(String name, String role) {
         ctx.get().enqueueWork(() -> {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
+                String displayText = switch (msg.role()) {
+                    case WEREWOLF -> "人狼";
+                    case LUNATIC, VILLAGE -> "村人";
+                    case FOX -> "妖狐";
+                    default -> "プレイヤー";
+                };
                 player.sendSystemMessage(Component.literal(
                         msg.name() + " の役職は " + msg.role() + " です。"
                 ));
@@ -30,4 +38,3 @@ public record ResponseRolePacket(String name, String role) {
         ctx.get().setPacketHandled(true);
     }
 }
-
