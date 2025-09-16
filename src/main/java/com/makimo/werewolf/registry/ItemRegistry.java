@@ -1,6 +1,7 @@
 package com.makimo.werewolf.registry;
 
 import com.makimo.werewolf.item.*;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tiers;
@@ -15,6 +16,7 @@ public class ItemRegistry { //アイテムを登録するクラス
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
 
     public static final RegistryObject<Item> SHOP_ITEM = ITEMS.register("shop_item", () -> new ShopItem(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> CANDLE_ITEM = ITEMS.register("candle_item", () -> new CandleItem(new Item.Properties()));
     public static final RegistryObject<Item> COIN = ITEMS.register("coin", () -> new CoinItem(new Item.Properties().rarity(Rarity.EPIC)));
     public static final RegistryObject<Item> CRYSTAL = ITEMS.register("crystal", () -> new CrystalItem(new Item.Properties().rarity(Rarity.EPIC)));
     public static final RegistryObject<Item> WOLVES_AXE = ITEMS.register("wolves_axe", () -> new WolvesAxeItem(new Item.Properties().durability(1)));

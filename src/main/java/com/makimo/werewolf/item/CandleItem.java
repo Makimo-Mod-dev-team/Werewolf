@@ -1,0 +1,57 @@
+package com.makimo.werewolf.item;
+
+import com.makimo.werewolf.game.GameManager;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkHooks;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class CandleItem extends Item {
+    public CandleItem(Properties pProperties) {
+        super(pProperties);
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
+        if (!pLevel.isClientSide() && pPlayer instanceof ServerPlayer serverPlayer) {
+
+            // サーバーインスタンスを取得
+            MinecraftServer server = pLevel.getServer();
+            if (server == null) {
+                return InteractionResultHolder.fail(pPlayer.getItemInHand(pUsedHand));
+            }
+
+            // GameManagerのメソッドを使用して死亡プレイヤーのリストを取得
+            List<String> deadPlayers = GameManager.getPlayerNamesList(server, GameManager.dead);
+
+            MenuProvider menuProvider = new MenuProvider() {
+                @Override
+                public Component getDisplayName() {
+                    return Component.translatable("gui.werewolf.candle");
+                }
+
+                @Override
+                public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
+                    return new com.makimo.werewolf.gui.CandleMenu(pContainerId, pPlayerInventory);
+                }
+            };
+            NetworkHooks.openScreen(serverPlayer, menuProvider, buffer -> {
+                buffer.writeCollection(deadPlayers, (buf, name) -> buf.writeUtf(name));
+            });
+        }
+        return InteractionResultHolder.success(pPlayer.getItemInHand(pUsedHand));
+    }
+}

@@ -1,5 +1,6 @@
 package com.makimo.werewolf.event;
 
+import com.makimo.werewolf.gui.CandleScreen;
 import com.makimo.werewolf.gui.ShopScreen;
 import com.makimo.werewolf.registry.ItemRegistry;
 import com.makimo.werewolf.registry.MenuRegistry;
@@ -26,9 +27,10 @@ public class ClientSetupEvents {
                         if (count >= 30) return 4;
                         if (count >= 20) return 3; // 袋
                         if (count >= 10) return 2; // 束
-                        if (count >= 2)  return 1; // 小銭
+                        if (count >= 2) return 1; // 小銭
                         return 0;                   // 1枚
                     });
+            MenuScreens.register(MenuRegistry.CANDLE_MENU.get(), CandleScreen::new);
         });
     }
 }
