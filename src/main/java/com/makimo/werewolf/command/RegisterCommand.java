@@ -89,10 +89,10 @@ public class RegisterCommand {
                                 GameManager.homeZ = vec.z;
 
                                 context.getSource().sendSuccess(
-                                        () -> Component.literal("HomePosition set to (" +
+                                        () -> Component.literal("HomePositionを (" +
                                         GameManager.homeX + ", " +
                                         GameManager.homeY + ", " +
-                                        GameManager.homeZ + ")"),
+                                        GameManager.homeZ + ") に設定しました"),
                                         false
                                 );
                             } catch (Exception e) {
@@ -104,7 +104,7 @@ public class RegisterCommand {
                     )
                     .executes(context -> {
                         context.getSource().sendSuccess(
-                                () -> Component.literal("HomePosition set to (" +
+                                () -> Component.literal("現在のHomePosition : (" +
                                 GameManager.homeX + ", " +
                                 GameManager.homeY + ", " +
                                 GameManager.homeZ + ")"),
