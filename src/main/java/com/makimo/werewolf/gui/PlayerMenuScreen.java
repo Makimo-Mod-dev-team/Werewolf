@@ -33,7 +33,7 @@ public class PlayerMenuScreen extends Screen {
                         Minecraft.getInstance().setScreen(null);
                         // ボタンクリック時の処理
                         TransformationManager.transform(Minecraft.getInstance().player, pd.getUUID());
-                        Minecraft.getInstance().player.sendSystemMessage(Component.literal("Clicked " + pd.getName()));
+                        Minecraft.getInstance().player.sendSystemMessage(Component.literal(pd.getName() + "に変身中"));
                     }).size(buttonWidth, buttonHeight) // サイズを指定
                     .pos(30, y)                     // 位置を指定
                     .build();
