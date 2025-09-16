@@ -5,6 +5,7 @@ import com.makimo.werewolf.manager.TransformationManager;
 import com.makimo.werewolf.network.NetworkHandler;
 import com.makimo.werewolf.network.OpenPlayerMenuPacket;
 import com.makimo.werewolf.util.DetectPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -25,13 +26,13 @@ public class DisguiseItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
-            List<PlayerData> otherPlayers = level.players()
+            MinecraftServer server = level.getServer();
+            List<PlayerData> otherPlayers = server.getPlayerList().getPlayers()
                     .stream()
                     .filter(p -> !p.getUUID().equals(player.getUUID()))
                     .map(p -> new PlayerData(p.getName().getString(), p.getUUID()))
                     .toList();
-            NetworkHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer)player),
-                    new OpenPlayerMenuPacket(otherPlayers));
+            NetworkHandler.sendToPlayer(new OpenPlayerMenuPacket(otherPlayers), (ServerPlayer)player);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }

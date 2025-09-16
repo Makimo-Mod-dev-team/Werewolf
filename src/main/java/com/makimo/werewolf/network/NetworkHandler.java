@@ -38,10 +38,29 @@ public class NetworkHandler {
                 .encoder(OpenPlayerMenuPacket::encode)
                 .consumerMainThread(OpenPlayerMenuPacket::handle)
                 .add();
+        INSTANCE.messageBuilder(OpenCandleMenuPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(OpenCandleMenuPacket::decode)
+                .encoder(OpenCandleMenuPacket::encode)
+                .consumerMainThread(OpenCandleMenuPacket::handle)
+                .add();
+        INSTANCE.registerMessage(id(), RequestRolePacket.class,
+                        RequestRolePacket::encode,
+                        RequestRolePacket::decode,
+                        RequestRolePacket::handle
+        );
+        INSTANCE.registerMessage(id(), ResponseRolePacket.class,
+                ResponseRolePacket::encode,
+                ResponseRolePacket::decode,
+                ResponseRolePacket::handle
+        );
     }
 
     public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+    }
+
+    public static <MSG> void sendToServer(MSG message) {
+        INSTANCE.sendToServer(message);
     }
 }
 

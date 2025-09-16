@@ -12,24 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CandleMenu extends AbstractContainerMenu {
-    public Player player;
-    private List<String> deadPlayerNames; // 死亡プレイヤー名のリスト
+    public Player player;// 使用者
+    private List<PlayerData> data;
 
-    public CandleMenu(int id, Inventory playerInv, FriendlyByteBuf extraData) {
+    public CandleMenu(int id, Inventory playerInv, FriendlyByteBuf buf) {
         super(MenuRegistry.CANDLE_MENU.get(), id);
         this.player = playerInv.player;
-
-        // FriendlyByteBufからプレイヤー名のリストを読み込む
-        // データがない場合は空のリストを初期化
-        if (extraData != null) {
-            this.deadPlayerNames = extraData.readList(FriendlyByteBuf::readUtf);
-        } else {
-            this.deadPlayerNames = new ArrayList<>();
-        }
     }
 
-    public CandleMenu(int id, Inventory playerInv) {
-        this(id, playerInv, null);
+    public CandleMenu(int id, Inventory playerInv, List<PlayerData> data) {
+        this(id, playerInv, (FriendlyByteBuf) null);
     }
 
     @Override
@@ -40,7 +32,5 @@ public class CandleMenu extends AbstractContainerMenu {
         return true;
     }
 
-    public List<String> getDeadPlayerNames() {
-        return this.deadPlayerNames;
-    }
+    public List<PlayerData> getDeadPlayers() { return this.data; }
 }

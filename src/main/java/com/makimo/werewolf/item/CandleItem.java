@@ -1,12 +1,16 @@
 package com.makimo.werewolf.item;
 
 import com.makimo.werewolf.game.GameManager;
+import com.makimo.werewolf.gui.PlayerData;
+import com.makimo.werewolf.network.NetworkHandler;
+import com.makimo.werewolf.network.OpenCandleMenuPacket;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -28,6 +32,14 @@ public class CandleItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         if (!pLevel.isClientSide() && pPlayer instanceof ServerPlayer serverPlayer) {
 
+            MinecraftServer server = pLevel.getServer();
+            List<PlayerData> otherPlayers =  server.getPlayerList().getPlayers()
+                    .stream()
+                    .filter(p -> !p.getUUID().equals(pPlayer.getUUID()))
+                    .map(p -> new PlayerData(p.getName().getString(), p.getUUID()))
+                    .toList();
+            NetworkHandler.sendToPlayer(new OpenCandleMenuPacket(otherPlayers), serverPlayer);
+            /*
             // サーバーインスタンスを取得
             MinecraftServer server = pLevel.getServer();
             if (server == null) {
@@ -45,12 +57,13 @@ public class CandleItem extends Item {
 
                 @Override
                 public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-                    return new com.makimo.werewolf.gui.CandleMenu(pContainerId, pPlayerInventory);
+                    return new com.makimo.werewolf.gui.CandleMenu(pContainerId, pPlayerInventory, deadPlayers);
                 }
             };
             NetworkHooks.openScreen(serverPlayer, menuProvider, buffer -> {
                 buffer.writeCollection(deadPlayers, (buf, name) -> buf.writeUtf(name));
             });
+            */
         }
         return InteractionResultHolder.success(pPlayer.getItemInHand(pUsedHand));
     }

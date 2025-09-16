@@ -9,6 +9,7 @@ import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.Difficulty;
 import net.minecraft.sounds.SoundEvents;
@@ -54,6 +55,8 @@ public class GameManager {
     public static boolean isDay = true;         // 現在昼か夜か
     public static int cycleTimer = 0;           // 残りtickカウント
     public static boolean isGameRunning = false; // ゲーム中かどうか
+
+    public static List<Player> deadPlayers = new ArrayList<>();
 
     // bossbar
     public static final ServerBossEvent timeBossBar =
@@ -183,6 +186,7 @@ public class GameManager {
             player.setGameMode(GameType.SPECTATOR); // "/gamemode spectator @s"
         }
         dead.add(uuid);
+        deadPlayers.add(player);
     }
 
     // 停止処理
@@ -216,6 +220,7 @@ public class GameManager {
         villagers.clear();
         fox.clear();
         dead.clear();
+        deadPlayers.clear();
         // 変数リセット
         winner = null;
         GameManager.isGameRunning = false;
