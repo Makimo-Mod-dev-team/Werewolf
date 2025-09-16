@@ -32,9 +32,9 @@ public class CrystalItem extends Item {// 占いアイテム
     public void divination(Player player, Player target) {
         target.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
             String displayText = switch (cap.getRole()) {
-                case WEREWOLF -> "人狼陣営";
-                case LUNATIC, VILLAGE -> "村人陣営";
-                case FOX -> "妖狐陣営";
+                case WEREWOLF -> "人狼";
+                case LUNATIC, VILLAGE -> "村人";
+                case FOX -> "妖狐";
                 default -> "プレイヤー";
             };
             if (cap.getRole() == Role.FOX) {

@@ -4,6 +4,7 @@ import com.makimo.werewolf.game.GameManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -44,8 +45,8 @@ public class RegisterCommand {
             .then(Commands.literal("emergency_stop")
                 .executes(context -> {
                     MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-                    context.getSource().sendSuccess(() -> Component.literal("ゲームを緊急停止します"), false);
                     GameManager.stopMonitoringAndAnnounce(server);
+                    context.getSource().sendSuccess(() -> Component.literal("--------- ゲームが緊急停止されました ---------").withStyle(ChatFormatting.RED), false);
                     return Command.SINGLE_SUCCESS;
                 })
             )
