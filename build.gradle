@@ -79,7 +79,6 @@ dependencies {
     implementation fg.deobf("curse.maven:caelus-308989:5281700")
     implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
     implementation fg.deobf("curse.maven:curios-309927:6418456")
-    implementation fg.deobf("curse.maven:saro-s-skin-changer-1234517:6996232")
 }
 
 tasks.named('processResources', ProcessResources).configure {
