@@ -57,6 +57,7 @@ public class GameManager {
     public static boolean isGameRunning = false; // ゲーム中かどうか
 
     public static List<Player> deadPlayers = new ArrayList<>();
+    public static List<Player> allPlayers = new ArrayList<>();
 
     // bossbar
     public static final ServerBossEvent timeBossBar =
@@ -78,6 +79,7 @@ public class GameManager {
 
         for (int i = 0; i < players.size(); i++) {
             ServerPlayer player = players.get(i);
+            allPlayers.add(player);
             Role choose;
             if (i < number_wolves) {
                 choose = Role.WEREWOLF;
@@ -223,6 +225,7 @@ public class GameManager {
         fox.clear();
         dead.clear();
         deadPlayers.clear();
+        allPlayers.clear();
         // 変数リセット
         winner = null;
         GameManager.isGameRunning = false;

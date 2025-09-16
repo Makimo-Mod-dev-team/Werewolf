@@ -33,7 +33,7 @@ public class CandleItem extends Item {
         if (!pLevel.isClientSide() && pPlayer instanceof ServerPlayer serverPlayer) {
 
             MinecraftServer server = pLevel.getServer();
-            List<PlayerData> otherPlayers =  server.getPlayerList().getPlayers()
+            List<PlayerData> otherPlayers =  GameManager.deadPlayers
                     .stream()
                     .filter(p -> !p.getUUID().equals(pPlayer.getUUID()))
                     .map(p -> new PlayerData(p.getName().getString(), p.getUUID()))
