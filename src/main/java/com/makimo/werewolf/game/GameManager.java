@@ -202,6 +202,10 @@ public class GameManager {
     // 停止処理
     public static void stopMonitoringAndAnnounce(MinecraftServer server) {
         monitoring = false; // 監視停止命令
+
+        // 時間を昼に
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set day");
+
         if (server == null) return;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             player.sendSystemMessage(Component.literal("======= ゲーム終了 ======="));
