@@ -209,6 +209,8 @@ public class GameManager {
             player.playNotifySound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.MASTER, 1.0F, 1.0F);
             // 全員ホームにtp
             //player.teleportTo(GameManager.homeX, GameManager.homeY, GameManager.homeZ);
+            // 時間を昼に
+            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set day");
             // "/gamemode adventure @a"
             player.setGameMode(GameType.ADVENTURE);
             GameManager.timeBossBar.removePlayer(player);
