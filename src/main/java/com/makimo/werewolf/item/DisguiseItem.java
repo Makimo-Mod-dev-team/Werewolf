@@ -1,5 +1,6 @@
 package com.makimo.werewolf.item;
 
+import com.makimo.werewolf.game.GameManager;
 import com.makimo.werewolf.gui.PlayerData;
 import com.makimo.werewolf.manager.TransformationManager;
 import com.makimo.werewolf.network.NetworkHandler;
@@ -27,7 +28,7 @@ public class DisguiseItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
             MinecraftServer server = level.getServer();
-            List<PlayerData> otherPlayers = server.getPlayerList().getPlayers()
+            List<PlayerData> otherPlayers = GameManager.allPlayers
                     .stream()
                     .filter(p -> !p.getUUID().equals(player.getUUID()))
                     .map(p -> new PlayerData(p.getName().getString(), p.getUUID()))
