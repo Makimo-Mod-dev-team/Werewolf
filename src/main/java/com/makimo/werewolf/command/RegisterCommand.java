@@ -13,6 +13,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import static com.makimo.werewolf.Werewolf.MOD_ID;
 
@@ -37,9 +38,17 @@ public class RegisterCommand {
                         context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
                         e.printStackTrace(); // コンソールに詳細出力
                     }
-                    context.getSource().getPlayerOrException().sendSystemMessage(Component.nullToEmpty("[Dev]:Success!")); // デバッグ用
                     return Command.SINGLE_SUCCESS;
-                }))
+                })
+            )
+            .then(Commands.literal("emergency_stop")
+                .executes(context -> {
+                    MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+                    context.getSource().sendSuccess(() -> Component.literal("ゲームを緊急停止します"), false);
+                    GameManager.stopMonitoringAndAnnounce(server);
+                    return Command.SINGLE_SUCCESS;
+                })
+            )
             .then(Commands.literal("setting")
                 .then(Commands.literal("Number")
                     .then(Commands.argument("NumberOfWerewolf", IntegerArgumentType.integer())
@@ -60,7 +69,15 @@ public class RegisterCommand {
                                     context.getSource().sendSuccess(() -> Component.literal("NumberOfLunatic=" + GameManager.number_lunatics), false);
                                     context.getSource().sendSuccess(() -> Component.literal("NumberOfFox=" + GameManager.number_foxes), false);
                                     return Command.SINGLE_SUCCESS;
-                            })))))
+                            }))))
+                    .executes(context ->{
+                        context.getSource().sendSuccess(() -> Component.literal("現在の人数設定 :"), false);
+                        context.getSource().sendSuccess(() -> Component.literal("NumberOfWerewolf=" + GameManager.number_wolves), false);
+                        context.getSource().sendSuccess(() -> Component.literal("NumberOfLunatic=" + GameManager.number_lunatics), false);
+                        context.getSource().sendSuccess(() -> Component.literal("NumberOfFox=" + GameManager.number_foxes), false);
+                        return Command.SINGLE_SUCCESS;
+                    })
+                )
                 .then(Commands.literal("HomePosition")
                     .then(Commands.argument("pos", Vec3Argument.vec3())
                         .executes(context -> {
@@ -72,18 +89,30 @@ public class RegisterCommand {
                                 GameManager.homeZ = vec.z;
 
                                 context.getSource().sendSuccess(
-                                    () -> Component.literal("HomePosition set to (" +
+                                        () -> Component.literal("HomePosition set to (" +
                                         GameManager.homeX + ", " +
                                         GameManager.homeY + ", " +
                                         GameManager.homeZ + ")"),
-                                    false
+                                        false
                                 );
                             } catch (Exception e) {
                                 context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
                                 e.printStackTrace();
                             }
                             return Command.SINGLE_SUCCESS;
-                        })))
+                        })
+                    )
+                    .executes(context -> {
+                        context.getSource().sendSuccess(
+                                () -> Component.literal("HomePosition set to (" +
+                                GameManager.homeX + ", " +
+                                GameManager.homeY + ", " +
+                                GameManager.homeZ + ")"),
+                                false
+                        );
+                        return Command.SINGLE_SUCCESS;
+                    })
+                )
             );
         event.getDispatcher().register(builder);
     }

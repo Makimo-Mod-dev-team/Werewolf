@@ -186,7 +186,7 @@ public class GameManager {
     }
 
     // 停止処理
-    private static void stopMonitoringAndAnnounce(MinecraftServer server) {
+    public static void stopMonitoringAndAnnounce(MinecraftServer server) {
         monitoring = false; // 監視停止命令
         if (server == null) return;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
