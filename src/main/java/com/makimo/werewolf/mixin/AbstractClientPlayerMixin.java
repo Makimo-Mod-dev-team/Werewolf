@@ -35,31 +35,10 @@ public class AbstractClientPlayerMixin {
             .build(new CacheLoader<>() {
                 @Override
                 public ResourceLocation load(UUID uuid) {
-                    try {
-                        // GameProfileをUUIDから取得
-                        GameProfile gameProfile = new GameProfile(uuid, "");
-
-
-
-                        // セッションサービスを使ってテクスチャ情報を取得
-                        MinecraftSessionService sessionService = Minecraft.getInstance().getMinecraftSessionService();
-                        Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = sessionService.getTextures(gameProfile, false);
-
-                        if (textures.containsKey(MinecraftProfileTexture.Type.SKIN)) {
-                            MinecraftProfileTexture skinTexture = textures.get(MinecraftProfileTexture.Type.SKIN);
-                            String skinUrl = skinTexture.getUrl();
-
-                            try (InputStream stream = new URL(skinUrl).openStream()) {
-                                ResourceLocation location = Minecraft.getInstance().getSkinManager().getInsecureSkinLocation(gameProfile);
-                                NativeImage image = NativeImage.read(stream);
-                                Minecraft.getInstance().getTextureManager().register(location, new DynamicTexture(image));
-                                return location;
-                            }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return new ResourceLocation(MOD_ID, "skin/reimu.png");
+                    // GameProfileをUUIDから取得
+                    GameProfile gameProfile = new GameProfile(uuid, "");
+                    ResourceLocation location = Minecraft.getInstance().getSkinManager().getInsecureSkinLocation(gameProfile);
+                    return location;
                 }
             });
 
