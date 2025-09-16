@@ -1,5 +1,7 @@
 package com.makimo.werewolf.network;
 
+import com.makimo.werewolf.capability.Role;
+import com.makimo.werewolf.game.GameManager;
 import com.makimo.werewolf.registry.CapabilityRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
@@ -25,15 +27,8 @@ public record RequestRolePacket(UUID target) {
             if (sender == null) return;
 
             MinecraftServer server = sender.server;
-            ServerPlayer target = server.getPlayerList().getPlayer(msg.target);
-
-            if (target != null) {
-                target.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
-                    String role = cap.getRole().toString();
-                    // クライアントに返信
-                    NetworkHandler.sendToPlayer(new ResponseRolePacket(target.getName().getString(), role), sender);
-                });
-            }
+            Role role = GameManager.roleMap.get(msg.target);
+            NetworkHandler.sendToPlayer(new ResponseRolePacket(GameManager.allPlayers.get(msg.target).getName().toString(), role.toString()), sender);
         });
         ctx.get().setPacketHandled(true);
     }

@@ -28,7 +28,7 @@ public class DisguiseItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
             MinecraftServer server = level.getServer();
-            List<PlayerData> otherPlayers = GameManager.allPlayers
+            List<PlayerData> otherPlayers = GameManager.playerList
                     .stream()
                     .filter(p -> !p.getUUID().equals(player.getUUID()))
                     .map(p -> new PlayerData(p.getName().getString(), p.getUUID()))

@@ -57,7 +57,9 @@ public class GameManager {
     public static boolean isGameRunning = false; // ゲーム中かどうか
 
     public static List<Player> deadPlayers = new ArrayList<>();
-    public static List<Player> allPlayers = new ArrayList<>();
+    public static Map<UUID, Player> allPlayers = new HashMap<>();
+    public static Map<UUID, Role> roleMap = new HashMap<>();
+    public static List<Player> playerList = new ArrayList<>();
 
     // bossbar
     public static final ServerBossEvent timeBossBar =
@@ -72,6 +74,10 @@ public class GameManager {
         villagers.clear();
         fox.clear();
         dead.clear();
+        deadPlayers.clear();
+        allPlayers.clear();
+        roleMap.clear();
+        playerList.clear();
 
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
         if (players.isEmpty()) return;
@@ -79,7 +85,8 @@ public class GameManager {
 
         for (int i = 0; i < players.size(); i++) {
             ServerPlayer player = players.get(i);
-            allPlayers.add(player);
+            allPlayers.put(player.getUUID(), player);
+            playerList.add(player);
             Role choose;
             if (i < number_wolves) {
                 choose = Role.WEREWOLF;
@@ -99,6 +106,7 @@ public class GameManager {
                 cap.setRole(role);
             });
             // "/gamemode adventure @a"
+            roleMap.put(player.getUUID(), role);
             player.setGameMode(GameType.ADVENTURE);
             timeBossBar.addPlayer(player);
             sendTitleToPlayer(player, "Game Start", "あなたの陣営 : " + getRoleDisplayName(role));
@@ -224,6 +232,8 @@ public class GameManager {
         dead.clear();
         deadPlayers.clear();
         allPlayers.clear();
+        roleMap.clear();
+        playerList.clear();
         // 変数リセット
         winner = null;
         GameManager.isGameRunning = false;
