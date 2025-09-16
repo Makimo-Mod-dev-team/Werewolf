@@ -1,8 +1,11 @@
 {
   "gui.werewolf.shop" : "Shop",
   "gui.werewolf.candle" :  "Spirit Medium",
+  "item.werewolf.bomb_item" : "Bomb",
   "item.werewolf.coin" : "Coin",
   "item.werewolf.crystal" : "Crystal",
+  "item.werewolf.growing_item" : "Growing Item",
+  "item.werewolf.invisible_item" : "Invisible Item",
   "item.werewolf.shop_item" : "Shop",
   "item.werewolf.wolves_axe" : "Werewolf Axe",
   "itemGroup.werewolf.creative_tab" : "Werewolf"

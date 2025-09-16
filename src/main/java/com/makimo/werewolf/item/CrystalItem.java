@@ -5,6 +5,8 @@ import com.makimo.werewolf.registry.CapabilityRegistry;
 import com.makimo.werewolf.util.DetectPlayer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -56,15 +58,25 @@ public class CrystalItem extends Item {// 占いアイテム
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide) {
-            return InteractionResultHolder.pass(player.getItemInHand(hand));
+            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         }
         Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 3);
         if (targetPlayer != null) {
-            ItemStack stack = player.getItemInHand(hand);
             divination(player, targetPlayer);
             stack.shrink(1);
             player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
+            player.level().playSound(
+                    null,
+                    player.getX(), // X座標
+                    player.getY(), // Y座標
+                    player.getZ(), // Z座標
+                    SoundEvents.ENCHANTMENT_TABLE_USE,
+                    SoundSource.PLAYERS,
+                    1.0f, // 音量
+                    1.0f
+            );
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         } else {
             player.sendSystemMessage(Component.literal("占えるプレイヤーがいませんでした。"));

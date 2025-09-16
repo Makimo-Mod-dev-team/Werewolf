@@ -4,6 +4,7 @@ import com.makimo.werewolf.registry.CreativeTabRegistry;
 import com.makimo.werewolf.registry.EntityRegistry;
 import com.makimo.werewolf.registry.ItemRegistry;
 import com.makimo.werewolf.registry.MenuRegistry;
+import com.makimo.werewolf.setup.Messages;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -19,5 +20,6 @@ public class Werewolf {
         ItemRegistry.register(modEventBus);        // アイテムの登録
         MenuRegistry.register(modEventBus);        // メニューの登録
         EntityRegistry.register(modEventBus);
+        Messages.register();
     }
 }

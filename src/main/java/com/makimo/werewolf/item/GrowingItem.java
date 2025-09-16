@@ -1,10 +1,12 @@
 package com.makimo.werewolf.item;
 
-import com.makimo.werewolf.entity.BombEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -14,17 +16,17 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class BombItem extends Item {
-    public BombItem(Properties properties) {
+public class GrowingItem extends Item {
+    public GrowingItem(Properties properties) {
         super(properties);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.literal("右クリックすると爆弾を投げる。"));
-        tooltip.add(Component.literal("爆弾は自身以外のプレイヤーが"));
-        tooltip.add(Component.literal("近づくと爆発する。"));
+        tooltip.add(Component.literal("右クリックすると"));
+        tooltip.add(Component.literal("全てのプレイヤーが発光する"));
         tooltip.add(Component.literal("価格:1").withStyle(ChatFormatting.GOLD));
+        tooltip.add(Component.literal("効果時間:20s").withStyle(ChatFormatting.AQUA));
 
         super.appendHoverText(stack, level, tooltip, flag);
     }
@@ -32,14 +34,15 @@ public class BombItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-
-        if (!level.isClientSide) {
-            BombEntity bomb = new BombEntity(level, player);
-            bomb.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 0.9F, 1.0F);
-            level.addFreshEntity(bomb);
+        if (level.isClientSide) {
+            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        }
+        PlayerList players = level.getServer().getPlayerList();
+        for (Player target : players.getPlayers()) {
+            target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 400, 0, false, false));
         }
 
-        stack.shrink(1); // 消費
+        stack.shrink(1);
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 }

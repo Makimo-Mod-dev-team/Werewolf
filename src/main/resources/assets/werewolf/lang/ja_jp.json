@@ -1,8 +1,11 @@
 {
   "gui.werewolf.shop" : "ドン〇キホーテ",
   "gui.werewolf.candle" :  "霊媒師",
+  "item.werewolf.bomb_item" : "C4爆弾",
   "item.werewolf.coin" : "金貨",
   "item.werewolf.crystal" : "水晶玉",
+  "item.werewolf.growing_item" : "真の光",
+  "item.werewolf.invisible_item" : "個性:透明化",
   "item.werewolf.shop_item" : "ドン〇キホーテ",
   "item.werewolf.wolves_axe" : "人狼の斧",
   "itemGroup.werewolf.creative_tab" : "人狼"

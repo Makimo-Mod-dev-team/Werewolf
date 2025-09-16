@@ -58,13 +58,21 @@ public class BombEntity extends ThrowableProjectile implements GeoEntity {
     public void tick() {
         super.tick();
         if (!level().isClientSide && stuck) {
-            double radius = 1.0D;
+            double radius = 0.25D;
             List<Player> nearby = this.level().getEntitiesOfClass(Player.class,
                     this.getBoundingBox().inflate(radius),
                     p -> !p.isSpectator() && p.isAlive() && !p.getUUID().equals(this.owner.getUUID()));
 
             if (!nearby.isEmpty()) {
                 explode();
+                Player nearest = nearby.stream()
+                        .min(Comparator.comparingDouble(p -> p.distanceToSqr(this)))
+                        .orElse(null);
+
+                if (nearest != null) {
+                    // 即死（演出付きなら hurt でも可）
+                    nearest.kill();
+                }
             }
             this.setDeltaMovement(Vec3.ZERO);
             this.setPos(this.position());
@@ -72,22 +80,9 @@ public class BombEntity extends ThrowableProjectile implements GeoEntity {
     }
 
     private void explode() {
-        double radius = 5.0D;
-        List<Player> players = this.level().getEntitiesOfClass(Player.class,
-                this.getBoundingBox().inflate(radius),
-                p -> !p.isSpectator() && p.isAlive() && !p.getUUID().equals(this.owner.getUUID()));
-
-        if (!players.isEmpty()) {
-            // 一番近いプレイヤーを探す
-            Player nearest = players.stream()
-                    .min(Comparator.comparingDouble(p -> p.distanceToSqr(this)))
-                    .orElse(null);
-
-            if (nearest != null) {
-                // 即死（演出付きなら hurt でも可）
-                nearest.kill();
-            }
-        }
+        this.level().explode(this, this.getX(), this.getY(), this.getZ(),
+                2.0F, Level.ExplosionInteraction.NONE);
+        this.discard(); // 自分を消す
     }
 
     @Override
