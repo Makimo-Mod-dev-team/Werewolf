@@ -36,32 +36,31 @@ public class WolvesAxeItem extends Item {
     public void attack(Player player) {
         player.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
             if (cap.getRole() != Role.FOX) {
-                player.kill();
+                player.hurt(player.level().damageSources().playerAttack(player), Float.MAX_VALUE);
             }
         });
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        if (level.isClientSide) {
-            return InteractionResultHolder.pass(player.getItemInHand(hand));
-        }
-        Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 3);
-        if (targetPlayer != null) {
-            attack(targetPlayer);
-            ItemStack stack = player.getItemInHand(hand);
-            player.level().playSound(
-                    null,
-                    player.getX(), // X座標
-                    player.getY(), // Y座標
-                    player.getZ(), // Z座標
-                    SoundEvents.TOTEM_USE,
-                    SoundSource.PLAYERS,
-                    1.0f, // 音量
-                    1.0f
-            );
-            stack.shrink(1);
-            player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
+        if (!level.isClientSide) {
+            Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 3);
+            if (targetPlayer != null) {
+                attack(targetPlayer);
+                ItemStack stack = player.getItemInHand(hand);
+                player.level().playSound(
+                        null,
+                        player.getX(), // X座標
+                        player.getY(), // Y座標
+                        player.getZ(), // Z座標
+                        SoundEvents.TOTEM_USE,
+                        SoundSource.PLAYERS,
+                        1.0f, // 音量
+                        1.0f
+                );
+                stack.shrink(1);
+                player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
+            }
         }
         player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 20 * 5);
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());

@@ -54,7 +54,6 @@ public class AbstractClientPlayerMixin {
 
                 if (targetUuid != null) {
                     ResourceLocation customSkin = customSkinCache.get(targetUuid);
-                    player.sendSystemMessage(Component.literal(customSkin.getNamespace() + ":" + customSkin.getPath()));
                     if (customSkin != null) {
                         cir.setReturnValue(customSkin);
                     }
