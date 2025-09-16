@@ -28,7 +28,7 @@ public record RequestRolePacket(UUID target) {
 
             MinecraftServer server = sender.server;
             Role role = GameManager.roleMap.get(msg.target);
-            NetworkHandler.sendToPlayer(new ResponseRolePacket(GameManager.allPlayers.get(msg.target).getName().toString(), role.toString()), sender);
+            NetworkHandler.sendToPlayer(new ResponseRolePacket(GameManager.allPlayers.get(msg.target).getGameProfile().getName(), role.toString()), sender);
         });
         ctx.get().setPacketHandled(true);
     }
