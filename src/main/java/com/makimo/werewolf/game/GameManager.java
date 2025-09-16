@@ -32,6 +32,8 @@ public class GameManager {
     private static final Set<UUID> lunatics = new HashSet<>();
     private static final Set<UUID> villagers = new HashSet<>();
     private static final Set<UUID> fox = new HashSet<>();
+    // 死亡プレイヤーのリスト作製
+    public static final Set<UUID> dead = new HashSet<>();
     // 変数作製
     public static int number_wolves = 1;
     public static int number_lunatics = 1;
@@ -65,6 +67,7 @@ public class GameManager {
         lunatics.clear();
         villagers.clear();
         fox.clear();
+        dead.clear();
 
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
         if (players.isEmpty()) return;
@@ -179,6 +182,7 @@ public class GameManager {
         if (removed) {
             player.setGameMode(GameType.SPECTATOR); // "/gamemode spectator @s"
         }
+        dead.add(uuid);
     }
 
     // 停止処理
@@ -194,6 +198,7 @@ public class GameManager {
             player.sendSystemMessage(Component.literal("村人陣営 : " + snapshotVillagers).withStyle(ChatFormatting.GREEN));
             player.sendSystemMessage(Component.literal("妖狐陣営 : " + snapshotFox).withStyle(ChatFormatting.LIGHT_PURPLE));
             player.sendSystemMessage(Component.literal("========================"));
+            player.sendSystemMessage(Component.literal("死亡者 : " + getPlayerNamesList(server, dead))); // デバッグ用
             // タイトル表示
             sendTitleToPlayer(player, "勝者 : " + winner, "");
             // 終了サウンドを鳴らす
@@ -210,6 +215,7 @@ public class GameManager {
         lunatics.clear();
         villagers.clear();
         fox.clear();
+        dead.clear();
         // 変数リセット
         winner = null;
         GameManager.isGameRunning = false;
@@ -239,7 +245,7 @@ public class GameManager {
     }
 
     // プレイヤーリスト(UID)作製
-    private static List<String> getPlayerNamesList(MinecraftServer server, Set<UUID> uuids) {
+    public static List<String> getPlayerNamesList(MinecraftServer server, Set<UUID> uuids) {
         List<String> names = new ArrayList<>();
         for (UUID uuid : uuids) {
             // オンラインプレイヤー取得
