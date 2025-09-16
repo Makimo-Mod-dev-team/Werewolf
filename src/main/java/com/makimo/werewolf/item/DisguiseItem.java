@@ -25,13 +25,6 @@ public class DisguiseItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
-            /*
-            Player target = DetectPlayer.DetectPlayerFromLayCast(player, 3);
-            if (target == null) {
-                return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
-            }
-            TransformationManager.transform(player, target.getUUID());
-            */
             List<PlayerData> otherPlayers = level.players()
                     .stream()
                     .filter(p -> !p.getUUID().equals(player.getUUID()))
