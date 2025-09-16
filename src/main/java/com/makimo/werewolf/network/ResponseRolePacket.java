@@ -25,13 +25,13 @@ public record ResponseRolePacket(String name, String role) {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
                 String displayText = switch (msg.role()) {
-                    case WEREWOLF -> "人狼";
-                    case LUNATIC, VILLAGE -> "村人";
-                    case FOX -> "妖狐";
+                    case "WEREWOLF" -> "人狼";
+                    case "LUNATIC", "VILLAGE" -> "村人";
+                    case "FOX" -> "妖狐";
                     default -> "プレイヤー";
                 };
                 player.sendSystemMessage(Component.literal(
-                        msg.name() + " の役職は " + msg.role() + " です。"
+                        msg.name() + " の役職は " + displayText + " です。"
                 ));
             }
         });
