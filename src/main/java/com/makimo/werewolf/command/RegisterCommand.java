@@ -10,7 +10,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -27,47 +26,13 @@ public class RegisterCommand {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("ww")
             .then(Commands.literal("game")
                 .then(Commands.literal("Start") // "/ww game Start"
-                    .executes(context -> {
-                        //ここに処理を書く
-                        try {
-                            MinecraftServer server = context.getSource().getServer();
-                            if (server == null) {
-                                SendSystemMessage(context.getSource().getPlayer(), "サーバーが取得できませんでした。サーバー側でコマンドを実行してください。", ChatFormatting.RED);
-                                return 0;
-                            }
-
-                            GameManager.assignRoles(server); // 開始処理命令
-
-                        } catch (Exception e) {
-                            context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
-                            e.printStackTrace(); // コンソールに詳細出力
-                        }
-                        return Command.SINGLE_SUCCESS;
-                    })
+                    .executes(context -> CommandProcess.WWGameStart(context))
                 )
                 .then(Commands.literal("EmergencyStop") // "/ww game EmergencyStop"
-                    .executes(context -> {
-                        if (!GameManager.isGameRunning) {
-                            SendSystemMessage(context.getSource().getPlayer(), "現在ゲームは進行中ではありません。", ChatFormatting.RED);
-                            return Command.SINGLE_SUCCESS;
-                        }
-                        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-                        GameManager.stopMonitoringAndAnnounce(server);
-                        SendSystemMessage(context.getSource().getPlayer(), "--------- ゲームが緊急停止されました ---------", ChatFormatting.RED);
-                        return Command.SINGLE_SUCCESS;
-                    })
+                    .executes(context -> CommandProcess.WWGameEmergencyStop(context))
                 )
                     .then(Commands.literal("ChangeTime") // "/ww game ChangeTime"
-                        .executes(context -> {
-                            if (!GameManager.isGameRunning) {
-                                SendSystemMessage(context.getSource().getPlayer(), "このコマンドはゲーム中のみ有効です。", ChatFormatting.RED);
-                                return Command.SINGLE_SUCCESS;
-                            }
-                            SendSystemMessage(context.getSource().getPlayer(), "ゲームの時間を変更します。", ChatFormatting.WHITE);
-                            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-                            GameManager.ChangeGameTime(server);
-                            return Command.SINGLE_SUCCESS;
-                        })
+                        .executes(context -> CommandProcess.WWGameChangeTime(context))
                     )
             )
             .then(Commands.literal("setting")

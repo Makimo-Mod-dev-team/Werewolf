@@ -50,8 +50,10 @@ public class GameManager {
     private static List<String> snapshotFox;
 
     // 昼夜サイクル関連
-    public static int cycleDayTicks = 2400;     // 昼の長さ（tick単位、20tick=1秒）
-    public static int cycleNightTicks = 2400;   // 夜の長さ
+    public static int cycleDaySeconds = 120; // 昼の長さ(秒)
+    public static int cycleDayTicks = 20*cycleDaySeconds;
+    public static int cycleNightSeconds = 120; // 夜の長さ(秒)
+    public static int cycleNightTicks = 20*cycleNightSeconds;
     public static boolean isDay = true;         // 現在昼か夜か
     public static int cycleTimer = 0;           // 残りtickカウント
     public static boolean isGameRunning = false; // ゲーム中かどうか
@@ -69,7 +71,7 @@ public class GameManager {
         clearAllInventories(server); // 全員のインベントリをクリア
         DifficultyChanger.setHardDifficulty(); // DifficultyをHardに
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team add HidePlayerName"); // "HidePlayerName"というチームを作成
-        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team modify HidePlayerName nametagVisibility never");
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team modify HidePlayerName nametagVisibility never"); // チーム内のプレイヤーのネームタグを非表示にする
         // リストリセット
         wolves.clear();
         lunatics.clear();
@@ -110,13 +112,13 @@ public class GameManager {
             roleMap.put(player.getUUID(), role);
             player.setGameMode(GameType.ADVENTURE); // "/gamemode adventure @a"
             timeBossBar.addPlayer(player);
-            sendTitleToPlayer(player, "Game Start", "あなたの陣営 : " + getRoleDisplayName(role));
-            player.sendSystemMessage(Component.literal("あなたの陣営 : " + getRoleDisplayName(role)));
+            sendTitleToPlayer(player, "Game Start", "あなたの役職 : " + getRoleDisplayName(role));
+            player.sendSystemMessage(Component.literal("あなたの役職 : " + getRoleDisplayName(role)));
         }
 
         // 時間を昼に
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set day");
-        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team join HidePlayerName @a"); // playerをteamに追加
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team join HidePlayerName @a"); // 全員をチームに追加
         // リストをスナップショットリストに保存
         snapshotWolves = getPlayerNamesList(server, wolves);
         snapshotLunatics = getPlayerNamesList(server, lunatics);
