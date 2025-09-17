@@ -23,5 +23,6 @@ class GameRuleLock {
         server.getGameRules().getRule(GameRules.RULE_WEATHER_CYCLE).set(false, server);
         server.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
         server.getGameRules().getRule(GameRules.RULE_SHOWDEATHMESSAGES).set(false, server);
+        server.getGameRules().getRule(GameRules.RULE_SENDCOMMANDFEEDBACK).set(false, server);
     }
 }
