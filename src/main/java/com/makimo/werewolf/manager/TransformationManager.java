@@ -9,8 +9,8 @@ import java.util.UUID;
 public class TransformationManager {
     private static final Map<UUID, UUID> transformedPlayers = new HashMap<>();
 
-    public static void transform(Player player, UUID targetUuid) {
-        transformedPlayers.put(player.getUUID(), targetUuid);
+    public static void transform(UUID player, UUID targetUuid) {
+        transformedPlayers.put(player, targetUuid);
         // クライアントに変身を通知する（例: Packetを送信）
     }
 

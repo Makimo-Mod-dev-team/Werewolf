@@ -19,7 +19,7 @@ public class NetworkHandler {
         return id++;
     }
 
-    public static void init() {
+    public static void init(FMLCommonSetupEvent event) {
         INSTANCE = NetworkRegistry.newSimpleChannel(
                 new ResourceLocation(MOD_ID, "main"),
                 () -> PROTOCOL_VERSION,
@@ -33,31 +33,46 @@ public class NetworkHandler {
                 CandleCheckPacket::handle
         );
 
-        INSTANCE.messageBuilder(OpenPlayerMenuPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(OpenPlayerMenuPacket::decode)
-                .encoder(OpenPlayerMenuPacket::encode)
-                .consumerMainThread(OpenPlayerMenuPacket::handle)
-                .add();
         INSTANCE.messageBuilder(OpenCandleMenuPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(OpenCandleMenuPacket::decode)
                 .encoder(OpenCandleMenuPacket::encode)
                 .consumerMainThread(OpenCandleMenuPacket::handle)
                 .add();
-        INSTANCE.registerMessage(id(), RequestRolePacket.class,
-                        RequestRolePacket::encode,
-                        RequestRolePacket::decode,
-                        RequestRolePacket::handle
-        );
-        INSTANCE.registerMessage(id(), ResponseRolePacket.class,
-                ResponseRolePacket::encode,
-                ResponseRolePacket::decode,
-                ResponseRolePacket::handle
-        );
+
         INSTANCE.registerMessage(id(), PlayerButtonClickPacket.class,
                 PlayerButtonClickPacket::encode,
                 PlayerButtonClickPacket::decode,
                 PlayerButtonClickPacket::handle
         );
+
+        INSTANCE.registerMessage(id(), C2SDisguisePacket.class,
+                C2SDisguisePacket::encode,
+                C2SDisguisePacket::decode,
+                C2SDisguisePacket::handle
+        );
+
+        INSTANCE.registerMessage(id(), S2CDisguisePacket.class,
+                S2CDisguisePacket::encode,
+                S2CDisguisePacket::decode,
+                S2CDisguisePacket::handle
+        );
+
+        INSTANCE.registerMessage(id(), C2SCandlePacket.class,
+                C2SCandlePacket::encode,
+                C2SCandlePacket::decode,
+                C2SCandlePacket::handle
+        );
+
+        INSTANCE.registerMessage(id(), S2CCandlePacket.class,
+                S2CCandlePacket::encode,
+                S2CCandlePacket::decode,
+                S2CCandlePacket::handle
+        );
+
+        INSTANCE.registerMessage(id(), OpenDisguiseMenuPacket.class,
+                OpenDisguiseMenuPacket::encode,
+                OpenDisguiseMenuPacket::decode,
+                OpenDisguiseMenuPacket::handle);
     }
 
     public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
@@ -66,6 +81,10 @@ public class NetworkHandler {
 
     public static <MSG> void sendToServer(MSG message) {
         INSTANCE.sendToServer(message);
+    }
+
+    public static <MSG> void sendToAllPlayers(MSG message) {
+        INSTANCE.send(PacketDistributor.ALL.noArg(), message);
     }
 }
 

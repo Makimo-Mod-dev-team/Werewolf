@@ -42,32 +42,9 @@ public class CandleItem extends Item {
                     .filter(p -> !p.getUUID().equals(pPlayer.getUUID()))
                     .map(p -> new PlayerData(p.getName().getString(), p.getUUID()))
                     .toList();
-            NetworkHandler.sendToPlayer(new OpenCandleMenuPacket(otherPlayers), serverPlayer);
-            /*
-            // サーバーインスタンスを取得
-            MinecraftServer server = pLevel.getServer();
-            if (server == null) {
-                return InteractionResultHolder.fail(pPlayer.getItemInHand(pUsedHand));
+            if (!otherPlayers.isEmpty()) {
+                NetworkHandler.sendToPlayer(new OpenCandleMenuPacket(otherPlayers), serverPlayer);
             }
-
-            // GameManagerのメソッドを使用して死亡プレイヤーのリストを取得
-            List<String> deadPlayers = GameManager.getPlayerNamesList(server, GameManager.dead);
-
-            MenuProvider menuProvider = new MenuProvider() {
-                @Override
-                public Component getDisplayName() {
-                    return Component.translatable("gui.werewolf.candle");
-                }
-
-                @Override
-                public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-                    return new com.makimo.werewolf.gui.CandleMenu(pContainerId, pPlayerInventory, deadPlayers);
-                }
-            };
-            NetworkHooks.openScreen(serverPlayer, menuProvider, buffer -> {
-                buffer.writeCollection(deadPlayers, (buf, name) -> buf.writeUtf(name));
-            });
-            */
         }
         return InteractionResultHolder.success(pPlayer.getItemInHand(pUsedHand));
     }
