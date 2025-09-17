@@ -9,5 +9,6 @@
   "item.werewolf.shop_item" : "Shop",
   "item.werewolf.wolves_axe" : "Werewolf Axe",
   "item.werewolf.candle_item" : "Candle",
+  "item.werewolf.disguise_item" : "Disguise Item",
   "itemGroup.werewolf.creative_tab" : "Werewolf"
 }

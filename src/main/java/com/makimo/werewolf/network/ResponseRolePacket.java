@@ -10,8 +10,6 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-import static com.makimo.werewolf.capability.Role.*;
-
 public record ResponseRolePacket(String name, String role) {
     public static void encode(ResponseRolePacket msg, FriendlyByteBuf buf) {
         buf.writeUtf(msg.name);
