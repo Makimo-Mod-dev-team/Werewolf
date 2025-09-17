@@ -20,6 +20,6 @@ public class Werewolf {
         ItemRegistry.register(modEventBus);        // アイテムの登録
         MenuRegistry.register(modEventBus);        // メニューの登録
         EntityRegistry.register(modEventBus);
-        NetworkHandler.init();
+        modEventBus.addListener(NetworkHandler::init);
     }
 }
