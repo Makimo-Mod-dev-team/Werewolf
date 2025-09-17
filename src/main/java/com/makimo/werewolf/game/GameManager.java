@@ -167,22 +167,7 @@ public class GameManager {
         if (!GameManager.isGameRunning) return;
         GameManager.cycleTimer--; // 1tick減らす
         if (GameManager.cycleTimer <= 0) {
-            // 昼夜切替
-            GameManager.isDay = !GameManager.isDay;
-            GameManager.cycleTimer = GameManager.isDay ? GameManager.cycleDayTicks : GameManager.cycleNightTicks;
-
-            // 時間を強制セット
-            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(),
-                    GameManager.isDay ? "time set day" : "time set midnight");
-
-            // bossbar 表示文字更新
-            if (GameManager.isDay) {
-                GameManager.timeBossBar.setName(Component.literal("昼 残り時間").withStyle(ChatFormatting.YELLOW));
-            } else {
-                GameManager.timeBossBar.setName(Component.literal("夜 残り時間").withStyle(ChatFormatting.DARK_BLUE));
-            }
-
-            GameManager.timeBossBar.setColor(GameManager.isDay ? BossEvent.BossBarColor.YELLOW : BossEvent.BossBarColor.PURPLE);
+            GameTimeChange(server);
         }
 
         // プログレス更新（必ず毎 tick 設定）
@@ -313,5 +298,25 @@ public class GameManager {
                 server.setDifficulty(Difficulty.HARD, true); // trueで即座にプレイヤーへ反映
             }
         }
+    }
+
+    // ゲームの時間更新
+    public  static  void GameTimeChange(MinecraftServer server) {
+        // 昼夜切替
+        GameManager.isDay = !GameManager.isDay;
+        GameManager.cycleTimer = GameManager.isDay ? GameManager.cycleDayTicks : GameManager.cycleNightTicks;
+
+        // 時間を強制セット
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(),
+                GameManager.isDay ? "time set day" : "time set midnight");
+
+        // bossbar 表示文字更新
+        if (GameManager.isDay) {
+            GameManager.timeBossBar.setName(Component.literal("昼 残り時間").withStyle(ChatFormatting.YELLOW));
+        } else {
+            GameManager.timeBossBar.setName(Component.literal("夜 残り時間").withStyle(ChatFormatting.DARK_BLUE));
+        }
+
+        GameManager.timeBossBar.setColor(GameManager.isDay ? BossEvent.BossBarColor.YELLOW : BossEvent.BossBarColor.PURPLE);
     }
 }

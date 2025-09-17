@@ -23,7 +23,7 @@ public class RegisterCommand {
     @SubscribeEvent
     public static void onRegisterWWCommand(RegisterCommandsEvent event) {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("ww")
-            .then(Commands.literal("start")
+            .then(Commands.literal("Start")
                 .executes(context -> {
                     //ここに処理を書く
                     try {
@@ -42,15 +42,19 @@ public class RegisterCommand {
                     return Command.SINGLE_SUCCESS;
                 })
             )
-            .then(Commands.literal("emergency_stop")
+            .then(Commands.literal("EmergencyStop")
                 .executes(context -> {
+                    if (!GameManager.isGameRunning) {
+                        context.getSource().sendSuccess(() -> Component.literal("現在ゲームは進行中ではありません。"), false);
+                        return Command.SINGLE_SUCCESS;
+                    }
                     MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
                     GameManager.stopMonitoringAndAnnounce(server);
                     context.getSource().sendSuccess(() -> Component.literal("--------- ゲームが緊急停止されました ---------").withStyle(ChatFormatting.RED), false);
                     return Command.SINGLE_SUCCESS;
                 })
             )
-            .then(Commands.literal("setting")
+            .then(Commands.literal("Setting")
                 .then(Commands.literal("Number")
                     .then(Commands.argument("NumberOfWerewolf", IntegerArgumentType.integer())
                         .then(Commands.argument("NumberOfLunatic", IntegerArgumentType.integer())
@@ -114,6 +118,18 @@ public class RegisterCommand {
                         return Command.SINGLE_SUCCESS;
                     })
                 )
+            )
+            .then(Commands.literal("ChangeTime")
+                .executes(context -> {
+                    if (!GameManager.isGameRunning) {
+                        context.getSource().sendSuccess(() -> Component.literal("このコマンドはゲーム中のみ有効です。"), false);
+                        return Command.SINGLE_SUCCESS;
+                    }
+                    context.getSource().sendSuccess(() -> Component.literal("ゲームの時間を変更します。"), false);
+                    MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+                    GameManager.GameTimeChange(server);
+                    return Command.SINGLE_SUCCESS;
+                })
             );
         event.getDispatcher().register(builder);
     }
