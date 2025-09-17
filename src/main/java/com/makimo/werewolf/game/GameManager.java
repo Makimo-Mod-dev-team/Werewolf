@@ -221,7 +221,6 @@ public class GameManager {
             player.sendSystemMessage(Component.literal("村人陣営 : " + snapshotVillagers).withStyle(ChatFormatting.GREEN));
             player.sendSystemMessage(Component.literal("妖狐陣営 : " + snapshotFox).withStyle(ChatFormatting.LIGHT_PURPLE));
             player.sendSystemMessage(Component.literal("========================"));
-            player.sendSystemMessage(Component.literal("死亡者 : " + getPlayerNamesList(server, dead))); // デバッグ用
             // タイトル表示
             sendTitleToPlayer(player, "勝者 : " + winner, "");
             // 終了サウンドを鳴らす
