@@ -176,7 +176,12 @@ public class GameManager {
                     GameManager.isDay ? "time set day" : "time set midnight");
 
             // bossbar 表示文字更新
-            GameManager.timeBossBar.setName(Component.literal(GameManager.isDay ? "昼 残り時間" : "夜 残り時間"));
+            if (GameManager.isDay) {
+                GameManager.timeBossBar.setName(Component.literal("昼 残り時間").withStyle(ChatFormatting.YELLOW));
+            } else {
+                GameManager.timeBossBar.setName(Component.literal("夜 残り時間").withStyle(ChatFormatting.DARK_BLUE));
+            }
+
             GameManager.timeBossBar.setColor(GameManager.isDay ? BossEvent.BossBarColor.YELLOW : BossEvent.BossBarColor.PURPLE);
         }
 

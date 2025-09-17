@@ -49,7 +49,7 @@ public class CrystalItem extends Item {// 占いアイテム
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.literal("プレイヤーの方向を向いて右クリックすると"));
+        tooltip.add(Component.literal("プレイヤを右クリックすると"));
         tooltip.add(Component.literal("役職を確認できる"));
         tooltip.add(Component.literal("夜のみ使用可能").withStyle(ChatFormatting.DARK_AQUA));
         tooltip.add(Component.literal("価格：1").withStyle(ChatFormatting.GOLD));
