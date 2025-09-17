@@ -1,6 +1,7 @@
 package com.makimo.werewolf.item;
 
 import com.makimo.werewolf.capability.Role;
+import com.makimo.werewolf.game.GameManager;
 import com.makimo.werewolf.registry.CapabilityRegistry;
 import com.makimo.werewolf.util.DetectPlayer;
 import net.minecraft.ChatFormatting;
@@ -50,6 +51,7 @@ public class CrystalItem extends Item {// 占いアイテム
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal("プレイヤーの方向を向いて右クリックすると"));
         tooltip.add(Component.literal("役職を確認できる"));
+        tooltip.add(Component.literal("夜のみ使用可能").withStyle(ChatFormatting.DARK_AQUA));
         tooltip.add(Component.literal("価格：1").withStyle(ChatFormatting.GOLD));
 
         super.appendHoverText(stack, level, tooltip, flag);
@@ -60,6 +62,10 @@ public class CrystalItem extends Item {// 占いアイテム
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide) {
+            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        }
+        if (GameManager.isDay) {
+            player.sendSystemMessage(Component.literal("このアイテムは夜にしか使えません。"));
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         }
         Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 10);

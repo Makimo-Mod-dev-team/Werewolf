@@ -3,7 +3,9 @@ package com.makimo.werewolf.network;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -33,6 +35,8 @@ public record ResponseRolePacket(String name, String role) {
                 player.sendSystemMessage(Component.literal(
                         msg.name() + " の役職は " + displayText + " です。"
                 ));
+                ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+                stack.shrink(1);
             }
         });
         ctx.get().setPacketHandled(true);

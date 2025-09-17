@@ -31,8 +31,12 @@ public class CandleItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         if (!pLevel.isClientSide() && pPlayer instanceof ServerPlayer serverPlayer) {
+            ItemStack stack = pPlayer.getItemInHand(InteractionHand.MAIN_HAND);
 
-            MinecraftServer server = pLevel.getServer();
+            if (GameManager.isDay) {
+                pPlayer.sendSystemMessage(Component.literal("このアイテムは夜にしか使えません。"));
+                return InteractionResultHolder.sidedSuccess(stack, pLevel.isClientSide());
+            }
             List<PlayerData> otherPlayers =  GameManager.deadPlayers
                     .stream()
                     .filter(p -> !p.getUUID().equals(pPlayer.getUUID()))
