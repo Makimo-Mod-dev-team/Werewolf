@@ -9,6 +9,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -23,39 +25,53 @@ public class RegisterCommand {
     @SubscribeEvent
     public static void onRegisterWWCommand(RegisterCommandsEvent event) {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("ww")
-            .then(Commands.literal("Start")
-                .executes(context -> {
-                    //ここに処理を書く
-                    try {
-                        MinecraftServer server = context.getSource().getServer();
-                        if (server == null) {
-                            context.getSource().sendFailure(Component.literal("サーバーが取得できませんでした。サーバー側でコマンドを実行してください。"));
-                            return 0;
+            .then(Commands.literal("game")
+                .then(Commands.literal("Start") // "/ww game Start"
+                    .executes(context -> {
+                        //ここに処理を書く
+                        try {
+                            MinecraftServer server = context.getSource().getServer();
+                            if (server == null) {
+                                SendSystemMessage(context.getSource().getPlayer(), "サーバーが取得できませんでした。サーバー側でコマンドを実行してください。", ChatFormatting.RED);
+                                return 0;
+                            }
+
+                            GameManager.assignRoles(server); // 開始処理命令
+
+                        } catch (Exception e) {
+                            context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
+                            e.printStackTrace(); // コンソールに詳細出力
                         }
-
-                        GameManager.assignRoles(server); // 開始処理命令
-
-                    } catch (Exception e) {
-                        context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
-                        e.printStackTrace(); // コンソールに詳細出力
-                    }
-                    return Command.SINGLE_SUCCESS;
-                })
-            )
-            .then(Commands.literal("EmergencyStop")
-                .executes(context -> {
-                    if (!GameManager.isGameRunning) {
-                        context.getSource().sendSuccess(() -> Component.literal("現在ゲームは進行中ではありません。"), false);
                         return Command.SINGLE_SUCCESS;
-                    }
-                    MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-                    GameManager.stopMonitoringAndAnnounce(server);
-                    context.getSource().sendSuccess(() -> Component.literal("--------- ゲームが緊急停止されました ---------").withStyle(ChatFormatting.RED), false);
-                    return Command.SINGLE_SUCCESS;
-                })
+                    })
+                )
+                .then(Commands.literal("EmergencyStop") // "/ww game EmergencyStop"
+                    .executes(context -> {
+                        if (!GameManager.isGameRunning) {
+                            SendSystemMessage(context.getSource().getPlayer(), "現在ゲームは進行中ではありません。", ChatFormatting.RED);
+                            return Command.SINGLE_SUCCESS;
+                        }
+                        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+                        GameManager.stopMonitoringAndAnnounce(server);
+                        SendSystemMessage(context.getSource().getPlayer(), "--------- ゲームが緊急停止されました ---------", ChatFormatting.RED);
+                        return Command.SINGLE_SUCCESS;
+                    })
+                )
+                    .then(Commands.literal("ChangeTime") // "/ww game ChangeTime"
+                        .executes(context -> {
+                            if (!GameManager.isGameRunning) {
+                                SendSystemMessage(context.getSource().getPlayer(), "このコマンドはゲーム中のみ有効です。", ChatFormatting.RED);
+                                return Command.SINGLE_SUCCESS;
+                            }
+                            SendSystemMessage(context.getSource().getPlayer(), "ゲームの時間を変更します。", ChatFormatting.WHITE);
+                            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+                            GameManager.ChangeGameTime(server);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
             )
-            .then(Commands.literal("Setting")
-                .then(Commands.literal("Number")
+            .then(Commands.literal("setting")
+                .then(Commands.literal("Number") // "/ww setting Number"
                     .then(Commands.argument("NumberOfWerewolf", IntegerArgumentType.integer())
                         .then(Commands.argument("NumberOfLunatic", IntegerArgumentType.integer())
                             .then(Commands.argument("NumberOfFox", IntegerArgumentType.integer())
@@ -70,20 +86,20 @@ public class RegisterCommand {
                                         e.printStackTrace(); // コンソールに詳細出力
                                     }
                                     // 確認用にプレイヤーに表示
-                                    context.getSource().sendSuccess(() -> Component.literal("NumberOfWerewolf=" + GameManager.number_wolves), false);
-                                    context.getSource().sendSuccess(() -> Component.literal("NumberOfLunatic=" + GameManager.number_lunatics), false);
-                                    context.getSource().sendSuccess(() -> Component.literal("NumberOfFox=" + GameManager.number_foxes), false);
+                                    SendSystemMessage(context.getSource().getPlayer(), "NumberOfWerewolf=" + GameManager.number_wolves, ChatFormatting.WHITE);
+                                    SendSystemMessage(context.getSource().getPlayer(), "NumberOfLunatic=" + GameManager.number_lunatics , ChatFormatting.WHITE);
+                                    SendSystemMessage(context.getSource().getPlayer(), "NumberOfFox=" + GameManager.number_foxes, ChatFormatting.WHITE);
                                     return Command.SINGLE_SUCCESS;
                             }))))
                     .executes(context ->{
-                        context.getSource().sendSuccess(() -> Component.literal("現在の人数設定 :"), false);
-                        context.getSource().sendSuccess(() -> Component.literal("NumberOfWerewolf=" + GameManager.number_wolves), false);
-                        context.getSource().sendSuccess(() -> Component.literal("NumberOfLunatic=" + GameManager.number_lunatics), false);
-                        context.getSource().sendSuccess(() -> Component.literal("NumberOfFox=" + GameManager.number_foxes), false);
+                        SendSystemMessage(context.getSource().getPlayer(), "現在の人数設定 :", ChatFormatting.WHITE);
+                        SendSystemMessage(context.getSource().getPlayer(), "NumberOfWerewolf=" + GameManager.number_wolves, ChatFormatting.WHITE);
+                        SendSystemMessage(context.getSource().getPlayer(), "NumberOfLunatic=" + GameManager.number_lunatics , ChatFormatting.WHITE);
+                        SendSystemMessage(context.getSource().getPlayer(), "NumberOfFox=" + GameManager.number_foxes, ChatFormatting.WHITE);
                         return Command.SINGLE_SUCCESS;
                     })
                 )
-                .then(Commands.literal("HomePosition")
+                .then(Commands.literal("HomePosition") // "/ww setting HomePosition"
                     .then(Commands.argument("pos", Vec3Argument.vec3())
                         .executes(context -> {
                             try {
@@ -93,12 +109,12 @@ public class RegisterCommand {
                                 GameManager.homeY = vec.y;
                                 GameManager.homeZ = vec.z;
 
-                                context.getSource().sendSuccess(
-                                        () -> Component.literal("HomePositionを (" +
+                                SendSystemMessage(context.getSource().getPlayer(),
+                                        "HomePositionを ("+
                                         GameManager.homeX + ", " +
                                         GameManager.homeY + ", " +
-                                        GameManager.homeZ + ") に設定しました"),
-                                        false
+                                        GameManager.homeZ + ") に設定しました",
+                                        ChatFormatting.WHITE
                                 );
                             } catch (Exception e) {
                                 context.getSource().sendSystemMessage(Component.literal("エラー: " + e.getMessage()));
@@ -108,29 +124,22 @@ public class RegisterCommand {
                         })
                     )
                     .executes(context -> {
-                        context.getSource().sendSuccess(
-                                () -> Component.literal("現在のHomePosition : (" +
+                        SendSystemMessage(context.getSource().getPlayer(),
+                                "現在のHomePosition : (" +
                                 GameManager.homeX + ", " +
                                 GameManager.homeY + ", " +
-                                GameManager.homeZ + ")"),
-                                false
+                                GameManager.homeZ + ")",
+                                ChatFormatting.WHITE
                         );
                         return Command.SINGLE_SUCCESS;
                     })
                 )
-            )
-            .then(Commands.literal("ChangeTime")
-                .executes(context -> {
-                    if (!GameManager.isGameRunning) {
-                        context.getSource().sendSuccess(() -> Component.literal("このコマンドはゲーム中のみ有効です。"), false);
-                        return Command.SINGLE_SUCCESS;
-                    }
-                    context.getSource().sendSuccess(() -> Component.literal("ゲームの時間を変更します。"), false);
-                    MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-                    GameManager.GameTimeChange(server);
-                    return Command.SINGLE_SUCCESS;
-                })
             );
         event.getDispatcher().register(builder);
+    }
+
+    // コマンド実行者にメッセージを返す
+    public static void SendSystemMessage(ServerPlayer player, String message, ChatFormatting TextColor) {
+        player.sendSystemMessage(Component.literal(message).withStyle(TextColor));
     }
 }

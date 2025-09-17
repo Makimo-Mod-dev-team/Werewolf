@@ -68,6 +68,8 @@ public class GameManager {
     public static void assignRoles(MinecraftServer server) {
         clearAllInventories(server); // 全員のインベントリをクリア
         DifficultyChanger.setHardDifficulty(); // DifficultyをHardに
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team add HidePlayerName"); // "HidePlayerName"というチームを作成
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team modify HidePlayerName nametagVisibility never");
         // リストリセット
         wolves.clear();
         lunatics.clear();
@@ -105,9 +107,8 @@ public class GameManager {
             player.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
                 cap.setRole(role);
             });
-            // "/gamemode adventure @a"
             roleMap.put(player.getUUID(), role);
-            player.setGameMode(GameType.ADVENTURE);
+            player.setGameMode(GameType.ADVENTURE); // "/gamemode adventure @a"
             timeBossBar.addPlayer(player);
             sendTitleToPlayer(player, "Game Start", "あなたの陣営 : " + getRoleDisplayName(role));
             player.sendSystemMessage(Component.literal("あなたの陣営 : " + getRoleDisplayName(role)));
@@ -115,6 +116,7 @@ public class GameManager {
 
         // 時間を昼に
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set day");
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team join HidePlayerName @a"); // playerをteamに追加
         // リストをスナップショットリストに保存
         snapshotWolves = getPlayerNamesList(server, wolves);
         snapshotLunatics = getPlayerNamesList(server, lunatics);
@@ -147,7 +149,7 @@ public class GameManager {
                 case LUNATIC -> formatting = ChatFormatting.RED;
                 case FOX -> formatting = ChatFormatting.LIGHT_PURPLE;
             }
-            player.displayClientMessage(Component.literal("あなたの陣営 : " + getRoleDisplayName(role)).withStyle(formatting), true);
+            player.displayClientMessage(Component.literal("あなたの役職 : " + getRoleDisplayName(role)).withStyle(formatting), true);
         }
 
         if (wolves.isEmpty() || villagers.isEmpty()) {
@@ -167,7 +169,7 @@ public class GameManager {
         if (!GameManager.isGameRunning) return;
         GameManager.cycleTimer--; // 1tick減らす
         if (GameManager.cycleTimer <= 0) {
-            GameTimeChange(server);
+            ChangeGameTime(server);
         }
 
         // プログレス更新（必ず毎 tick 設定）
@@ -206,15 +208,15 @@ public class GameManager {
             player.sendSystemMessage(Component.literal("村人陣営 : " + snapshotVillagers).withStyle(ChatFormatting.GREEN));
             player.sendSystemMessage(Component.literal("妖狐陣営 : " + snapshotFox).withStyle(ChatFormatting.LIGHT_PURPLE));
             player.sendSystemMessage(Component.literal("========================"));
-            // タイトル表示
-            sendTitleToPlayer(player, "勝者 : " + winner, "");
-            // 終了サウンドを鳴らす
-            player.playNotifySound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.MASTER, 1.0F, 1.0F);
-            // 全員ホームにtp
-            //player.teleportTo(GameManager.homeX, GameManager.homeY, GameManager.homeZ);
-            // "/gamemode adventure @a"
-            player.setGameMode(GameType.ADVENTURE);
+
+            sendTitleToPlayer(player, "勝者 : " + winner, ""); // タイトル表示
+            player.playNotifySound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.MASTER, 1.0F, 1.0F); // 終了サウンドを鳴らす
+            //player.teleportTo(GameManager.homeX, GameManager.homeY, GameManager.homeZ); // 全員ホームにtp
+            player.setGameMode(GameType.ADVENTURE); // "/gamemode adventure @a"
             GameManager.timeBossBar.removePlayer(player);
+            player.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
+                cap.setRole(Role.VILLAGE);
+            });
         }
 
         // リストリセット
@@ -230,6 +232,8 @@ public class GameManager {
         // 変数リセット
         winner = null;
         GameManager.isGameRunning = false;
+        // teamを解散
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team remove HidePlayerName");
         // インベントリをクリア
         clearAllInventories(server);
         // DifficultyをPeacefulに
@@ -247,10 +251,10 @@ public class GameManager {
     // Roleから表示文字列を取得
     public static String getRoleDisplayName(Role role) {
         return switch (role) {
-            case WEREWOLF -> "人狼陣営・人狼";
-            case LUNATIC -> "人狼陣営・狂人";
-            case VILLAGE -> "村人陣営";
-            case FOX -> "妖狐陣営";
+            case WEREWOLF -> "人狼";
+            case LUNATIC -> "狂人";
+            case VILLAGE -> "村人";
+            case FOX -> "妖狐";
             default -> "プレイヤー"; // たぶんいらない
         };
     }
@@ -301,7 +305,7 @@ public class GameManager {
     }
 
     // ゲームの時間更新
-    public  static  void GameTimeChange(MinecraftServer server) {
+    public  static  void ChangeGameTime(MinecraftServer server) {
         // 昼夜切替
         GameManager.isDay = !GameManager.isDay;
         GameManager.cycleTimer = GameManager.isDay ? GameManager.cycleDayTicks : GameManager.cycleNightTicks;
