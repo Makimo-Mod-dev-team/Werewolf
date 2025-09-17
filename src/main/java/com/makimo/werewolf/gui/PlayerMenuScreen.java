@@ -1,6 +1,9 @@
 package com.makimo.werewolf.gui;
 
+import com.makimo.werewolf.event.ServerEvents;
 import com.makimo.werewolf.manager.TransformationManager;
+import com.makimo.werewolf.network.NetworkHandler;
+import com.makimo.werewolf.network.PlayerButtonClickPacket;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,6 +12,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 
@@ -31,9 +36,11 @@ public class PlayerMenuScreen extends Screen {
             int finalY = y;
             Button button = Button.builder(Component.literal(pd.getName()), btn -> {
                 Minecraft.getInstance().setScreen(null);
+                Player self = Minecraft.getInstance().player;
                 // ボタンクリック時の処理
-                TransformationManager.transform(Minecraft.getInstance().player, pd.getUUID());
-                    Minecraft.getInstance().player.sendSystemMessage(Component.literal(pd.getName() + "に変身中"));
+                TransformationManager.transform(self, pd.getUUID());
+                self.sendSystemMessage(Component.literal(pd.getName() + "に変身中"));
+                NetworkHandler.sendToServer(new PlayerButtonClickPacket(pd.getUUID()));
                 }).size(buttonWidth, buttonHeight) // サイズを指定
                 .pos(30, y)                     // 位置を指定
                 .build();

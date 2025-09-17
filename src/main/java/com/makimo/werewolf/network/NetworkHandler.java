@@ -53,6 +53,11 @@ public class NetworkHandler {
                 ResponseRolePacket::decode,
                 ResponseRolePacket::handle
         );
+        INSTANCE.registerMessage(id(), PlayerButtonClickPacket.class,
+                PlayerButtonClickPacket::encode,
+                PlayerButtonClickPacket::decode,
+                PlayerButtonClickPacket::handle
+        );
     }
 
     public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
