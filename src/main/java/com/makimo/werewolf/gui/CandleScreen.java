@@ -1,7 +1,7 @@
 package com.makimo.werewolf.gui;
 
+import com.makimo.werewolf.network.C2SCandlePacket;
 import com.makimo.werewolf.network.NetworkHandler;
-import com.makimo.werewolf.network.RequestRolePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -27,7 +27,7 @@ public class CandleScreen extends Screen {
         for (PlayerData pd : playerList) {
             Button button = Button.builder(Component.literal(pd.getName()), btn -> {
                         Minecraft.getInstance().setScreen(null);
-                        NetworkHandler.sendToServer(new RequestRolePacket(pd.getUUID()));
+                        NetworkHandler.sendToServer(new C2SCandlePacket(pd.getUUID()));
                     })
                     .size(buttonWidth, buttonHeight) // サイズを指定
                     .pos(30, y)                     // 位置を指定
