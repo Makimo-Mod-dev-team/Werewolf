@@ -4,6 +4,8 @@ import com.makimo.werewolf.game.GameManager;
 import com.makimo.werewolf.gui.PlayerData;
 import com.makimo.werewolf.network.NetworkHandler;
 import com.makimo.werewolf.network.OpenDisguiseMenuPacket;
+import com.makimo.werewolf.network.S2CDisguisePacket;
+import com.makimo.werewolf.util.ServerTaskScheduler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,6 +47,9 @@ public class DisguiseItem extends Item {
 
             if (!otherPlayers.isEmpty()) {
                 NetworkHandler.sendToPlayer(new OpenDisguiseMenuPacket(otherPlayers), (ServerPlayer) player);
+                ServerTaskScheduler.schedule(20 * 20, () -> {
+                    NetworkHandler.sendToAllPlayers(new S2CDisguisePacket(player.getUUID(), player.getUUID()));
+                });
             }
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
