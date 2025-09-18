@@ -1,6 +1,8 @@
 package com.makimo.werewolf.game;
 
 import com.makimo.werewolf.capability.Role;
+import com.makimo.werewolf.network.NetworkHandler;
+import com.makimo.werewolf.network.S2CDisguisePacket;
 import com.makimo.werewolf.registry.CapabilityRegistry;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
@@ -67,7 +69,7 @@ public class GameManager {
 
     // bossbar
     public static final ServerBossEvent timeBossBar =
-            new ServerBossEvent(Component.literal("昼 残り時間"), BossBarColor.YELLOW, BossBarOverlay.PROGRESS);
+            new ServerBossEvent(Component.literal("昼 残り時間").withStyle(ChatFormatting.YELLOW), BossBarColor.YELLOW, BossBarOverlay.PROGRESS);
 
     public static void assignRoles(MinecraftServer server) {
         clearAllInventories(server); // 全員のインベントリをクリア
@@ -83,6 +85,7 @@ public class GameManager {
         allPlayers.clear();
         roleMap.clear();
         playerList.clear();
+        isDay = true;
 
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
         if (players.isEmpty()) return;
@@ -94,6 +97,7 @@ public class GameManager {
 
         for (int i = 0; i < players.size(); i++) {
             ServerPlayer player = players.get(i);
+            NetworkHandler.sendToAllPlayers(new S2CDisguisePacket(player.getUUID(), player.getUUID()));
             allPlayers.put(player.getUUID(), player);
             playerList.add(player);
             Role choose;
@@ -209,12 +213,13 @@ public class GameManager {
 
         if (server == null) return;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            NetworkHandler.sendToAllPlayers(new S2CDisguisePacket(player.getUUID(), player.getUUID()));
             ChatFormatting formatting = ChatFormatting.WHITE;
             switch (winner) {
-                case VILLAGE -> formatting = ChatFormatting.GREEN;
-                case WEREWOLF -> formatting = ChatFormatting.RED;
-                case LUNATIC -> formatting = ChatFormatting.RED;
-                case FOX -> formatting = ChatFormatting.LIGHT_PURPLE;
+                case "村人陣営" -> formatting = ChatFormatting.GREEN;
+                case "人狼陣営" -> formatting = ChatFormatting.RED;
+                //case LUNATIC -> formatting = ChatFormatting.RED;
+                case "妖狐陣営" -> formatting = ChatFormatting.LIGHT_PURPLE;
             }
             player.sendSystemMessage(Component.literal("======= ゲーム終了 ======="));
             player.sendSystemMessage(Component.literal("勝者 : " + winner).withStyle(formatting));
