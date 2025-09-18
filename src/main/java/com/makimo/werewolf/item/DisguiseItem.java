@@ -1,5 +1,6 @@
 package com.makimo.werewolf.item;
 
+import com.makimo.werewolf.game.GameManager;
 import com.makimo.werewolf.gui.PlayerData;
 import com.makimo.werewolf.network.NetworkHandler;
 import com.makimo.werewolf.network.OpenDisguiseMenuPacket;
@@ -36,15 +37,9 @@ public class DisguiseItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
-            /*
             List<PlayerData> otherPlayers = GameManager.playerList
                     .stream()
                     .filter(p -> !p.getUUID().equals(player.getUUID()))
-                    .map(p -> new PlayerData(p.getName().getString(), p.getUUID()))
-                    .toList();
-             */
-            List<PlayerData> otherPlayers = level.getServer().getPlayerList().getPlayers()
-                    .stream()
                     .map(p -> new PlayerData(p.getName().getString(), p.getUUID()))
                     .toList();
 
