@@ -26,6 +26,8 @@ import net.minecraft.world.BossEvent.BossBarOverlay;
 
 import java.util.*;
 
+import static com.makimo.werewolf.capability.Role.*;
+
 @Mod.EventBusSubscriber
 public class GameManager {
     // ゲーム中の陣営リスト作製
@@ -70,8 +72,7 @@ public class GameManager {
     public static void assignRoles(MinecraftServer server) {
         clearAllInventories(server); // 全員のインベントリをクリア
         DifficultyChanger.setHardDifficulty(); // DifficultyをHardに
-        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team add HidePlayerName"); // "HidePlayerName"というチームを作成
-        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team modify HidePlayerName nametagVisibility never"); // チーム内のプレイヤーのネームタグを非表示にする
+
         // リストリセット
         wolves.clear();
         lunatics.clear();
@@ -87,38 +88,44 @@ public class GameManager {
         if (players.isEmpty()) return;
         Collections.shuffle(players);
 
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team add players"); // "player"というチームを作成
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team modify players" + " nametagVisibility never"); // チーム内プレイヤーのネームタグを非表示にする
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team modify players seeFriendlyInvisibles false"); // チーム内の透明化を不可視化
+
         for (int i = 0; i < players.size(); i++) {
             ServerPlayer player = players.get(i);
             allPlayers.put(player.getUUID(), player);
             playerList.add(player);
             Role choose;
             if (i < number_wolves) {
-                choose = Role.WEREWOLF;
+                choose = WEREWOLF;
                 wolves.add(player.getUUID());
             } else if (i < number_wolves + number_lunatics) {
-                choose = Role.LUNATIC;
+                choose = LUNATIC;
                 lunatics.add(player.getUUID());
             } else if (i < number_wolves + number_lunatics + number_foxes) {
                 choose = Role.FOX;
                 fox.add(player.getUUID());
             } else {
-                choose = Role.VILLAGE;
+                choose = VILLAGE;
                 villagers.add(player.getUUID());
             }
             Role role = choose;
             player.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
                 cap.setRole(role);
             });
+
             roleMap.put(player.getUUID(), role);
             player.setGameMode(GameType.ADVENTURE); // "/gamemode adventure @a"
             timeBossBar.addPlayer(player);
+            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team join players " + player.getName().getString()); //
+            player.playNotifySound(SoundEvents.WITHER_SPAWN, SoundSource.MASTER, 1.0F, 1.0F); // 開始サウンドを鳴らす
             sendTitleToPlayer(player, "Game Start", "あなたの役職 : " + getRoleDisplayName(role));
             player.sendSystemMessage(Component.literal("あなたの役職 : " + getRoleDisplayName(role)));
         }
 
         // 時間を昼に
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set day");
-        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team join HidePlayerName @a"); // 全員をチームに追加
         // リストをスナップショットリストに保存
         snapshotWolves = getPlayerNamesList(server, wolves);
         snapshotLunatics = getPlayerNamesList(server, lunatics);
@@ -142,7 +149,7 @@ public class GameManager {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             Role role = player.getCapability(CapabilityRegistry.ROLE_CAP)
                     .map(cap -> cap.getRole())
-                    .orElse(Role.VILLAGE);
+                    .orElse(VILLAGE);
             // 第二引数 true でアクションバー表示
             ChatFormatting formatting = ChatFormatting.WHITE;
             switch (role) {
@@ -159,12 +166,10 @@ public class GameManager {
                 winner = "村人陣営";
             } else if (villagers.isEmpty() && fox.isEmpty()) {
                 winner = "人狼陣営";
-            } else if (!fox.isEmpty()) {
-                winner = "妖狐陣営";
             } else {
-                winner = "エラー(条件外)";
+                winner = "妖狐陣営";
             }
-            stopMonitoringAndAnnounce(server);
+            stopMonitoringAndAnnounce(server); // 停止処理命令
         }
         // BossBarの処理
         if (server == null) return;
@@ -187,7 +192,9 @@ public class GameManager {
         UUID uuid = player.getUUID(); // UUID取得
         boolean removed = wolves.remove(uuid) | villagers.remove(uuid) | fox.remove(uuid); // 所属陣営から削除
         if (removed) {
+            player.teleportTo(GameManager.homeX, GameManager.homeY, GameManager.homeZ);
             player.setGameMode(GameType.SPECTATOR); // "/gamemode spectator @s"
+
         }
         dead.add(uuid);
         deadPlayers.add(player);
@@ -202,8 +209,15 @@ public class GameManager {
 
         if (server == null) return;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            ChatFormatting formatting = ChatFormatting.WHITE;
+            switch (winner) {
+                case VILLAGE -> formatting = ChatFormatting.GREEN;
+                case WEREWOLF -> formatting = ChatFormatting.RED;
+                case LUNATIC -> formatting = ChatFormatting.RED;
+                case FOX -> formatting = ChatFormatting.LIGHT_PURPLE;
+            }
             player.sendSystemMessage(Component.literal("======= ゲーム終了 ======="));
-            player.sendSystemMessage(Component.literal("勝者 : " + winner));
+            player.sendSystemMessage(Component.literal("勝者 : " + winner).withStyle(formatting));
             // 保存しておいたスナップショットを表示
             player.sendSystemMessage(Component.literal("人狼陣営・人狼 : " + snapshotWolves).withStyle(ChatFormatting.RED));
             player.sendSystemMessage(Component.literal("人狼陣営・狂人 : " + snapshotLunatics).withStyle(ChatFormatting.RED));
@@ -217,7 +231,7 @@ public class GameManager {
             player.setGameMode(GameType.ADVENTURE); // "/gamemode adventure @a"
             GameManager.timeBossBar.removePlayer(player);
             player.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
-                cap.setRole(Role.VILLAGE);
+                cap.setRole(VILLAGE);
             });
         }
 
@@ -234,8 +248,9 @@ public class GameManager {
         // 変数リセット
         winner = null;
         GameManager.isGameRunning = false;
-        // teamを解散
-        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team remove HidePlayerName");
+
+        // チーム解散
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "team remove players");
         // インベントリをクリア
         clearAllInventories(server);
         // DifficultyをPeacefulに
