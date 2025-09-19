@@ -44,7 +44,7 @@ public class WolvesAxeItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide || !player.getCooldowns().isOnCooldown(this)) {
-            Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 3);
+            Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 5);
             if (targetPlayer != null) {
                 attack(targetPlayer);
                 ItemStack stack = player.getItemInHand(hand);
@@ -62,7 +62,7 @@ public class WolvesAxeItem extends Item {
                 player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
             }
         }
-        player.getCooldowns().addCooldown(this, 20 * 5);
+        player.getCooldowns().addCooldown(this, 20 * 3);
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
     }
 }
