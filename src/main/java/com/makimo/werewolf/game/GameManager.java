@@ -71,6 +71,7 @@ public class GameManager {
     public static final ServerBossEvent timeBossBar =
             new ServerBossEvent(Component.literal("昼 残り時間").withStyle(ChatFormatting.YELLOW), BossBarColor.YELLOW, BossBarOverlay.PROGRESS);
 
+    // 開始処理
     public static void assignRoles(MinecraftServer server) {
         clearAllInventories(server); // 全員のインベントリをクリア
         DifficultyChanger.setHardDifficulty(); // DifficultyをHardに
@@ -85,7 +86,6 @@ public class GameManager {
         allPlayers.clear();
         roleMap.clear();
         playerList.clear();
-        isDay = true;
 
         List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
         if (players.isEmpty()) return;
@@ -130,6 +130,11 @@ public class GameManager {
 
         // 時間を昼に
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set day");
+        isDay = true;
+        GameManager.cycleTimer = cycleDaySeconds;
+        GameManager.timeBossBar.setName(Component.literal("昼 残り時間").withStyle(ChatFormatting.YELLOW));
+        GameManager.timeBossBar.setColor(BossEvent.BossBarColor.YELLOW);
+
         // リストをスナップショットリストに保存
         snapshotWolves = getPlayerNamesList(server, wolves);
         snapshotLunatics = getPlayerNamesList(server, lunatics);
@@ -137,7 +142,6 @@ public class GameManager {
         snapshotFox = getPlayerNamesList(server, fox);
 
         monitoring = true; // 監視開始命令
-        isDay = true;
         cycleTimer = cycleDayTicks;
         isGameRunning = true;
     }
@@ -210,6 +214,10 @@ public class GameManager {
 
         // 時間を昼に
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set day");
+        isDay = true;
+        GameManager.cycleTimer = cycleDaySeconds;
+        GameManager.timeBossBar.setName(Component.literal("昼 残り時間").withStyle(ChatFormatting.YELLOW));
+        GameManager.timeBossBar.setColor(BossEvent.BossBarColor.YELLOW);
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             NetworkHandler.sendToAllPlayers(new S2CDisguisePacket(player.getUUID(), player.getUUID()));
