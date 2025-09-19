@@ -4,7 +4,6 @@ import com.makimo.werewolf.game.GameManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.server.MinecraftServer;
