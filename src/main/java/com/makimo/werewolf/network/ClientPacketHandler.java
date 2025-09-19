@@ -26,4 +26,10 @@ public class ClientPacketHandler {
         Player player = Minecraft.getInstance().level.getPlayerByUUID(user);
         player.sendSystemMessage(Component.literal(target + "は" + role));
     }
+
+    public static void killPlayer(UUID targetID, UUID userID) {
+        Player target = Minecraft.getInstance().level.getPlayerByUUID(targetID);
+        Player user = Minecraft.getInstance().level.getPlayerByUUID(userID);
+        target.hurt(user.level().damageSources().playerAttack(user), Float.MAX_VALUE);
+    }
 }

@@ -50,7 +50,7 @@ public class BombEntity extends ThrowableProjectile implements GeoEntity {
     protected void onHitEntity(EntityHitResult result) {
         super.onHitEntity(result);
         if (!this.level().isClientSide) {
-            explode();
+            this.stuck = true;
         }
     }
 

@@ -4,10 +4,12 @@ import com.makimo.werewolf.game.GameManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -21,14 +23,16 @@ public class CommandProcess {
         return Command.SINGLE_SUCCESS;
     }
     // "/ww game EmergencyStop"
-    public static int WWGameEmergencyStop(CommandContext<CommandSourceStack> context) {
+    public static int WWGameEmergencyStop(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
         if (!GameManager.isGameRunning) {
-            SendSystemMessage(context.getSource().getPlayer(), "現在ゲームは進行中ではありません。", ChatFormatting.RED);
+            SendSystemMessage(player, "現在ゲームは進行中ではありません。", ChatFormatting.RED);
             return Command.SINGLE_SUCCESS;
         }
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         GameManager.stopMonitoringAndAnnounce(server);
-        SendSystemMessage(context.getSource().getPlayer(), "--------- ゲームが緊急停止されました ---------", ChatFormatting.RED);
+
+        SendSystemMessage(player, "--------- ゲームが緊急停止されました ---------", ChatFormatting.RED);
         return Command.SINGLE_SUCCESS;
     }
     // "/ww game ChangeTime"

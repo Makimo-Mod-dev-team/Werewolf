@@ -26,6 +26,7 @@ public class ItemRegistry { //アイテムを登録するクラス
     public static final RegistryObject<Item> BOMB_ITEM = ITEMS.register("bomb_item", () -> new BombItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> GROWING_ITEM = ITEMS.register("growing_item", () -> new GrowingItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> DISGUISE_ITEM = ITEMS.register("disguise_item", () -> new DisguiseItem(new Item.Properties()));
+    public static final RegistryObject<Item> DEATH_NOTE_ITEM = ITEMS.register("death_note_item.json", () -> new DeathNoteItem(new Item.Properties()));
 
     public static void register(IEventBus eventBus) { //アイテムを登録する関数
         ITEMS.register(eventBus);
