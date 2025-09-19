@@ -43,7 +43,7 @@ public class WolvesAxeItem extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide || !player.getCooldowns().isOnCooldown(this)) {
             Player targetPlayer = DetectPlayer.DetectPlayerFromLayCast(player, 3);
             if (targetPlayer != null) {
                 attack(targetPlayer);
