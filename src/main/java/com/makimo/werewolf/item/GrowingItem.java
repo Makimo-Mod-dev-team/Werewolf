@@ -3,6 +3,8 @@ package com.makimo.werewolf.item;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.PlayerList;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -34,15 +36,25 @@ public class GrowingItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (level.isClientSide) {
-            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
-        }
-        PlayerList players = level.getServer().getPlayerList();
-        for (Player target : players.getPlayers()) {
-            target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 400, 0, false, false));
-        }
+        if (!level.isClientSide) {
+            PlayerList players = level.getServer().getPlayerList();
+            for (Player target : players.getPlayers()) {
+                if (target != player) {
+                    target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 400, 0, false, false));
+                }
+            }
+            level.playSound(
+                    null,
+                    player.blockPosition(),
+                    SoundEvents.ANVIL_DESTROY,
+                    SoundSource.PLAYERS,
+                    1.0f, // 音量
+                    1.0f
+            );
 
-        stack.shrink(1);
+            stack.shrink(1);
+            player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
+        }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 }

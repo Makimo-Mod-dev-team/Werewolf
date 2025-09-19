@@ -9,6 +9,8 @@ import com.makimo.werewolf.util.ServerTaskScheduler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -45,12 +47,23 @@ public class DisguiseItem extends Item {
                     .map(p -> new PlayerData(p.getName().getString(), p.getUUID()))
                     .toList();
 
+            stack.shrink(1);
+            player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
+
             if (!otherPlayers.isEmpty()) {
                 NetworkHandler.sendToPlayer(new OpenDisguiseMenuPacket(otherPlayers), (ServerPlayer) player);
                 ServerTaskScheduler.schedule(20 * 20, () -> {
                     NetworkHandler.sendToAllPlayers(new S2CDisguisePacket(player.getUUID(), player.getUUID()));
                 });
             }
+            level.playSound(
+                    null,
+                    player.blockPosition(),
+                    SoundEvents.WITHER_DEATH,
+                    SoundSource.PLAYERS,
+                    1.0f, // 音量
+                    1.0f
+            );
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }

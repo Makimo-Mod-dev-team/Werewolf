@@ -2,6 +2,8 @@ package com.makimo.werewolf.network;
 
 import com.makimo.werewolf.manager.TransformationManager;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.UUID;

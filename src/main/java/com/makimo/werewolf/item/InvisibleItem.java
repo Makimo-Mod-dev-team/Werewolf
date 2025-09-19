@@ -3,6 +3,8 @@ package com.makimo.werewolf.item;
 import io.redspace.ironsspellbooks.registries.MobEffectRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -33,7 +35,20 @@ public class InvisibleItem extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        player.addEffect(new MobEffectInstance(MobEffectRegistry.TRUE_INVISIBILITY.get(), 400, 0, false, false, true));
-        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
+        ItemStack stack = player.getItemInHand(hand);
+        if (!level.isClientSide) {
+            player.addEffect(new MobEffectInstance(MobEffectRegistry.TRUE_INVISIBILITY.get(), 400, 0, false, false, true));
+            level.playSound(
+                    null,
+                    player.blockPosition(),
+                    SoundEvents.LIGHTNING_BOLT_IMPACT,
+                    SoundSource.PLAYERS,
+                    1.0f, // 音量
+                    1.0f
+            );
+            stack.shrink(1);
+            player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
+        }
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 }

@@ -73,11 +73,9 @@ public class CrystalItem extends Item {// 占いアイテム
             divination(player, targetPlayer);
             stack.shrink(1);
             player.setItemInHand(hand, stack.isEmpty() ? ItemStack.EMPTY : stack);
-            player.level().playSound(
+            level.playSound(
                     null,
-                    player.getX(), // X座標
-                    player.getY(), // Y座標
-                    player.getZ(), // Z座標
+                    player.blockPosition(),
                     SoundEvents.ENCHANTMENT_TABLE_USE,
                     SoundSource.PLAYERS,
                     1.0f, // 音量
