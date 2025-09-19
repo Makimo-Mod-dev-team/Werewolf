@@ -23,16 +23,17 @@ public class CommandProcess {
         return Command.SINGLE_SUCCESS;
     }
     // "/ww game EmergencyStop"
-    public static int WWGameEmergencyStop(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer player = context.getSource().getPlayerOrException();
+    public static int WWGameEmergencyStop(CommandContext<CommandSourceStack> context) {
         if (!GameManager.isGameRunning) {
+            ServerPlayer player = context.getSource().getPlayer();
             SendSystemMessage(player, "現在ゲームは進行中ではありません。", ChatFormatting.RED);
             return Command.SINGLE_SUCCESS;
         }
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         GameManager.stopMonitoringAndAnnounce(server, true);
-
-        SendSystemMessage(player, "--------- ゲームが緊急停止されました ---------", ChatFormatting.RED);
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            SendSystemMessage(player, "--------- ゲームが緊急停止されました ---------", ChatFormatting.RED);
+        }
         return Command.SINGLE_SUCCESS;
     }
     // "/ww game ChangeTime"
