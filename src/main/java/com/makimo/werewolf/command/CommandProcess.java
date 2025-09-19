@@ -30,7 +30,7 @@ public class CommandProcess {
             return Command.SINGLE_SUCCESS;
         }
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        GameManager.stopMonitoringAndAnnounce(server);
+        GameManager.stopMonitoringAndAnnounce(server, true);
 
         SendSystemMessage(player, "--------- ゲームが緊急停止されました ---------", ChatFormatting.RED);
         return Command.SINGLE_SUCCESS;

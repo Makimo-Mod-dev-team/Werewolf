@@ -173,7 +173,7 @@ public class GameManager {
             } else {
                 winner = "妖狐陣営";
             }
-            stopMonitoringAndAnnounce(server); // 停止処理命令
+            stopMonitoringAndAnnounce(server, false); // 停止処理命令
         }
         // BossBarの処理
         if (server == null) return;
@@ -205,33 +205,34 @@ public class GameManager {
     }
 
     // 停止処理
-    public static void stopMonitoringAndAnnounce(MinecraftServer server) {
+    public static void stopMonitoringAndAnnounce(MinecraftServer server, boolean isCommand) {
         monitoring = false; // 監視停止命令
 
         // 時間を昼に
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set day");
 
-        if (server == null) return;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             NetworkHandler.sendToAllPlayers(new S2CDisguisePacket(player.getUUID(), player.getUUID()));
-            ChatFormatting formatting = ChatFormatting.WHITE;
-            switch (winner) {
-                case "村人陣営" -> formatting = ChatFormatting.GREEN;
-                case "人狼陣営" -> formatting = ChatFormatting.RED;
-                //case LUNATIC -> formatting = ChatFormatting.RED;
-                case "妖狐陣営" -> formatting = ChatFormatting.LIGHT_PURPLE;
-            }
-            player.sendSystemMessage(Component.literal("======= ゲーム終了 ======="));
-            player.sendSystemMessage(Component.literal("勝者 : " + winner).withStyle(formatting));
-            // 保存しておいたスナップショットを表示
-            player.sendSystemMessage(Component.literal("人狼陣営・人狼 : " + snapshotWolves).withStyle(ChatFormatting.RED));
-            player.sendSystemMessage(Component.literal("人狼陣営・狂人 : " + snapshotLunatics).withStyle(ChatFormatting.RED));
-            player.sendSystemMessage(Component.literal("村人陣営 : " + snapshotVillagers).withStyle(ChatFormatting.GREEN));
-            player.sendSystemMessage(Component.literal("妖狐陣営 : " + snapshotFox).withStyle(ChatFormatting.LIGHT_PURPLE));
-            player.sendSystemMessage(Component.literal("========================"));
+            if (!isCommand) {
+                ChatFormatting formatting = ChatFormatting.WHITE;
+                switch (winner) {
+                    case "村人陣営" -> formatting = ChatFormatting.GREEN;
+                    case "人狼陣営" -> formatting = ChatFormatting.RED;
+                    //case LUNATIC -> formatting = ChatFormatting.RED;
+                    case "妖狐陣営" -> formatting = ChatFormatting.LIGHT_PURPLE;
+                }
+                player.sendSystemMessage(Component.literal("======= ゲーム終了 ======="));
+                player.sendSystemMessage(Component.literal("勝者 : " + winner).withStyle(formatting));
+                // 保存しておいたスナップショットを表示
+                player.sendSystemMessage(Component.literal("人狼陣営・人狼 : " + snapshotWolves).withStyle(ChatFormatting.RED));
+                player.sendSystemMessage(Component.literal("人狼陣営・狂人 : " + snapshotLunatics).withStyle(ChatFormatting.RED));
+                player.sendSystemMessage(Component.literal("村人陣営 : " + snapshotVillagers).withStyle(ChatFormatting.GREEN));
+                player.sendSystemMessage(Component.literal("妖狐陣営 : " + snapshotFox).withStyle(ChatFormatting.LIGHT_PURPLE));
+                player.sendSystemMessage(Component.literal("========================"));
 
-            sendTitleToPlayer(player, "勝者 : " + winner, ""); // タイトル表示
-            player.playNotifySound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.MASTER, 1.0F, 1.0F); // 終了サウンドを鳴らす
+                sendTitleToPlayer(player, "勝者 : " + winner, ""); // タイトル表示
+                player.playNotifySound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.MASTER, 1.0F, 1.0F); // 終了サウンドを鳴らす
+            }
             //player.teleportTo(GameManager.homeX, GameManager.homeY, GameManager.homeZ); // 全員ホームにtp
             player.setGameMode(GameType.ADVENTURE); // "/gamemode adventure @a"
             GameManager.timeBossBar.removePlayer(player);
