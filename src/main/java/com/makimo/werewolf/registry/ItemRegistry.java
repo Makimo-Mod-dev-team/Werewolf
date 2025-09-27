@@ -1,10 +1,7 @@
 package com.makimo.werewolf.registry;
 
 import com.makimo.werewolf.item.*;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.*;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -27,6 +24,12 @@ public class ItemRegistry { //アイテムを登録するクラス
     public static final RegistryObject<Item> GROWING_ITEM = ITEMS.register("growing_item", () -> new GrowingItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> DISGUISE_ITEM = ITEMS.register("disguise_item", () -> new DisguiseItem(new Item.Properties()));
     public static final RegistryObject<Item> DEATH_NOTE_ITEM = ITEMS.register("death_note_item", () -> new DeathNoteItem(new Item.Properties()));
+    public static final RegistryObject<Item> LAVA_CHICKEN_RECORD = ITEMS.register("lava_chicken_disc", () -> new RecordItem(
+            15,
+            SoundRegistry.LAVA_CHICKEN,
+            new Item.Properties().stacksTo(1).rarity(Rarity.RARE),
+            2680
+    ));
 
     public static void register(IEventBus eventBus) { //アイテムを登録する関数
         ITEMS.register(eventBus);

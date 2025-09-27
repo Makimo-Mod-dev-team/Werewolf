@@ -1,3 +1,7 @@
 {
-
+  "lava_chicken": {
+    "sounds": [
+        "werewolf:lava_chicken"
+    ]
+  }
 }
