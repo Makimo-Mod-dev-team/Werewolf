@@ -21,14 +21,18 @@ public class ShopMenu extends AbstractContainerMenu {
         super(MenuRegistry.SHOP_MENU.get(), id);
         this.player = playerInv.player;
 
-        this.shopContainer = new SimpleContainer(1) {
+        this.shopContainer = new SimpleContainer(27) {
             @Override
             public boolean stillValid(Player player) {
                 return true;
             }
         };
 
-        this.addSlot(new Slot(this.shopContainer, 0, 80, 35));
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 9; x++) {
+                this.addSlot(new Slot(this.shopContainer, x + y * 9, 8 + x * 18,  16 + y * 18));
+            }
+        }
 
         // プレイヤーインベントリスロットとか追加
         for (int row = 0; row < 3; ++row) {
@@ -45,12 +49,23 @@ public class ShopMenu extends AbstractContainerMenu {
         this(id, playerInv); // 使わなければこれでOK
     }
 
+    public void foxSlot() {
+
+    }
+
     public void villagerSlot() {
         this.shopContainer.setItem(0, new ItemStack(ItemRegistry.CRYSTAL.get()));
+        this.shopContainer.setItem(1, new ItemStack(ItemRegistry.INVISIBLE_ITEM.get()));
+        this.shopContainer.setItem(2, new ItemStack(ItemRegistry.GROWING_ITEM.get()));
+        this.shopContainer.setItem(3, new ItemStack(ItemRegistry.BOMB_ITEM.get()));
+        this.shopContainer.setItem(4, new ItemStack(ItemRegistry.CANDLE_ITEM.get()));
+        this.shopContainer.setItem(5, new ItemStack(ItemRegistry.DEATH_NOTE_ITEM.get()));
     }
 
     public void werewolfSlot() {
-        this.shopContainer.setItem(0, new ItemStack(ItemRegistry.CRYSTAL.get()));
+        this.shopContainer.setItem(0, new ItemStack(ItemRegistry.WOLVES_AXE.get()));
+        this.shopContainer.setItem(1, new ItemStack(ItemRegistry.GROWING_ITEM.get()));
+        this.shopContainer.setItem(4, new ItemStack(ItemRegistry.CANDLE_ITEM.get()));
     }
 
     @Override
@@ -61,6 +76,7 @@ public class ShopMenu extends AbstractContainerMenu {
         if (this.player instanceof ServerPlayer serverPlayer) {
             serverPlayer.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
                 switch (cap.getRole()) {
+                    case FOX -> foxSlot();
                     case VILLAGE -> villagerSlot();
                     case WEREWOLF -> werewolfSlot();
                 }
