@@ -31,8 +31,8 @@ public class DisguiseItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal("右クリックすると一定時間"));
         tooltip.add(Component.literal("他人に変装できる"));
-        tooltip.add(Component.literal("価格:1").withStyle(ChatFormatting.GOLD));
-        tooltip.add(Component.literal("効果時間:30s").withStyle(ChatFormatting.AQUA));
+        tooltip.add(Component.literal("価格:6").withStyle(ChatFormatting.GOLD));
+        tooltip.add(Component.literal("効果時間:40s").withStyle(ChatFormatting.AQUA));
 
         super.appendHoverText(stack, level, tooltip, flag);
     }
@@ -52,7 +52,7 @@ public class DisguiseItem extends Item {
 
             if (!otherPlayers.isEmpty()) {
                 NetworkHandler.sendToPlayer(new OpenDisguiseMenuPacket(otherPlayers), (ServerPlayer) player);
-                ServerTaskScheduler.schedule(20 * 20, () -> {
+                ServerTaskScheduler.schedule(20 * 40, () -> {
                     NetworkHandler.sendToAllPlayers(new S2CDisguisePacket(player.getUUID(), player.getUUID()));
                 });
             }

@@ -24,7 +24,7 @@ public class DeathNoteItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal("ノートに名前を書かれた"));
         tooltip.add(Component.literal("者は必ず死ぬ"));
-        tooltip.add(Component.literal("価格:1").withStyle(ChatFormatting.GOLD));
+        tooltip.add(Component.literal("価格:30").withStyle(ChatFormatting.GOLD));
         tooltip.add(Component.literal("死亡時間:30s後").withStyle(ChatFormatting.DARK_RED));
 
         super.appendHoverText(stack, level, tooltip, flag);
@@ -37,7 +37,7 @@ public class DeathNoteItem extends Item {
             Player target = DetectPlayer.DetectPlayerFromLayCast(player, 10);
             if (target != null) {
                 player.sendSystemMessage(Component.literal(target.getDisplayName().getString() + ""));
-                ServerTaskScheduler.schedule(20 * 3, () -> {
+                ServerTaskScheduler.schedule(20 * 30, () -> {
                     target.hurt(player.level().damageSources().playerAttack(player), Float.MAX_VALUE);
                 });
             }

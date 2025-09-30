@@ -52,7 +52,7 @@ public class CrystalItem extends Item {// 占いアイテム
         tooltip.add(Component.literal("プレイヤを右クリックすると"));
         tooltip.add(Component.literal("役職を確認できる"));
         tooltip.add(Component.literal("夜のみ使用可能").withStyle(ChatFormatting.DARK_AQUA));
-        tooltip.add(Component.literal("価格：1").withStyle(ChatFormatting.GOLD));
+        tooltip.add(Component.literal("価格：8").withStyle(ChatFormatting.GOLD));
 
         super.appendHoverText(stack, level, tooltip, flag);
     }

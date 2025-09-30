@@ -27,7 +27,7 @@ public class GrowingItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal("右クリックすると"));
         tooltip.add(Component.literal("全てのプレイヤーが発光する"));
-        tooltip.add(Component.literal("価格:1").withStyle(ChatFormatting.GOLD));
+        tooltip.add(Component.literal("価格:3").withStyle(ChatFormatting.GOLD));
         tooltip.add(Component.literal("効果時間:20s").withStyle(ChatFormatting.AQUA));
 
         super.appendHoverText(stack, level, tooltip, flag);

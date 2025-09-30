@@ -27,7 +27,7 @@ public class WolvesAxeItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal("村人陣営に右クリックすると即死させるが"));
         tooltip.add(Component.literal("1つにつき1回しか使えない"));
-        tooltip.add(Component.literal("価格:1").withStyle(ChatFormatting.GOLD));
+        tooltip.add(Component.literal("価格:8").withStyle(ChatFormatting.GOLD));
         tooltip.add(Component.literal("クールタイム:5s").withStyle(ChatFormatting.BLUE));
 
         super.appendHoverText(stack, level, tooltip, flag);

@@ -50,7 +50,12 @@ public class ShopMenu extends AbstractContainerMenu {
     }
 
     public void foxSlot() {
-
+        this.shopContainer.setItem(0, new ItemStack(ItemRegistry.DISGUISE_ITEM.get()));
+        this.shopContainer.setItem(1, new ItemStack(ItemRegistry.INVISIBLE_ITEM.get()));
+        this.shopContainer.setItem(2, new ItemStack(ItemRegistry.GROWING_ITEM.get()));
+        this.shopContainer.setItem(3, new ItemStack(ItemRegistry.BOMB_ITEM.get()));
+        this.shopContainer.setItem(4, new ItemStack(ItemRegistry.CANDLE_ITEM.get()));
+        this.shopContainer.setItem(5, new ItemStack(ItemRegistry.DEATH_NOTE_ITEM.get()));
     }
 
     public void villagerSlot() {
@@ -64,8 +69,11 @@ public class ShopMenu extends AbstractContainerMenu {
 
     public void werewolfSlot() {
         this.shopContainer.setItem(0, new ItemStack(ItemRegistry.WOLVES_AXE.get()));
-        this.shopContainer.setItem(1, new ItemStack(ItemRegistry.GROWING_ITEM.get()));
+        this.shopContainer.setItem(1, new ItemStack(ItemRegistry.INVISIBLE_ITEM.get()));
+        this.shopContainer.setItem(2, new ItemStack(ItemRegistry.GROWING_ITEM.get()));
+        this.shopContainer.setItem(3, new ItemStack(ItemRegistry.BOMB_ITEM.get()));
         this.shopContainer.setItem(4, new ItemStack(ItemRegistry.CANDLE_ITEM.get()));
+        this.shopContainer.setItem(5, new ItemStack(ItemRegistry.DEATH_NOTE_ITEM.get()));
     }
 
     @Override
@@ -77,7 +85,7 @@ public class ShopMenu extends AbstractContainerMenu {
             serverPlayer.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
                 switch (cap.getRole()) {
                     case FOX -> foxSlot();
-                    case VILLAGE -> villagerSlot();
+                    case VILLAGE, LUNATIC -> villagerSlot();
                     case WEREWOLF -> werewolfSlot();
                 }
             });
@@ -99,18 +107,84 @@ public class ShopMenu extends AbstractContainerMenu {
 
     @Override
     public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
-        // 通常の処理をしないようにするなら super を呼ばない
-        if (slotId == 0) {
-            Slot slot = this.slots.get(slotId);
-            ItemStack stack = slot.getItem();
-
-            if (!stack.isEmpty()) {
-                // 例えば「エメラルド1個でダイヤを買う」みたいな処理
-                ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 1);
+        Slot slot = this.slots.get(slotId);
+        ItemStack stack = slot.getItem();
+        if (stack.isEmpty()) {
+            return;
+        }
+        switch (slotId) {
+            case 0 : {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.getCapability(CapabilityRegistry.ROLE_CAP).ifPresent(cap -> {
+                        switch (cap.getRole()) {
+                            case VILLAGE, LUNATIC : {
+                                ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 8);
+                                if (player.getInventory().contains(cost)) {
+                                    Shopping(player, cost);
+                                    player.getInventory().add(new ItemStack(ItemRegistry.CRYSTAL.get(), 1));
+                                }
+                                break;
+                            }
+                            case WEREWOLF : {
+                                ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 8);
+                                if (player.getInventory().contains(cost)) {
+                                    Shopping(player, cost);
+                                    player.getInventory().add(new ItemStack(ItemRegistry.WOLVES_AXE.get(), 1));
+                                }
+                                break;
+                            }
+                            case FOX : {
+                                ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 6);
+                                if (player.getInventory().contains(cost)) {
+                                    Shopping(player, cost);
+                                    player.getInventory().add(new ItemStack(ItemRegistry.DISGUISE_ITEM.get(), 1));
+                                }
+                                break;
+                            }
+                        }
+                    });
+                }
+                break;
+            }
+            case 1 : {
+                ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 8);
                 if (player.getInventory().contains(cost)) {
                     Shopping(player, cost);
-                    player.getInventory().add(new ItemStack(ItemRegistry.CRYSTAL.get(), 1));
+                    player.getInventory().add(new ItemStack(ItemRegistry.INVISIBLE_ITEM.get(), 1));
                 }
+                break;
+            }
+            case 2 : {
+                ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 3);
+                if (player.getInventory().contains(cost)) {
+                    Shopping(player, cost);
+                    player.getInventory().add(new ItemStack(ItemRegistry.GROWING_ITEM.get(), 1));
+                }
+                break;
+            }
+            case 3 : {
+                ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 10);
+                if (player.getInventory().contains(cost)) {
+                    Shopping(player, cost);
+                    player.getInventory().add(new ItemStack(ItemRegistry.BOMB_ITEM.get(), 1));
+                }
+                break;
+            }
+            case 4 : {
+                ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 4);
+                if (player.getInventory().contains(cost)) {
+                    Shopping(player, cost);
+                    player.getInventory().add(new ItemStack(ItemRegistry.CANDLE_ITEM.get(), 1));
+                }
+                break;
+            }
+            case 5 : {
+                ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 30);
+                if (player.getInventory().contains(cost)) {
+                    Shopping(player, cost);
+                    player.getInventory().add(new ItemStack(ItemRegistry.DEATH_NOTE_ITEM.get(), 1));
+                }
+                break;
             }
         }
     }

@@ -27,7 +27,7 @@ public class InvisibleItem extends Item {
         tooltip.add(Component.literal("右クリックすると自身を透明化する。"));
         tooltip.add(Component.literal("手に持ったアイテムなども透明化するが"));
         tooltip.add(Component.literal("攻撃をすると解除される"));
-        tooltip.add(Component.literal("価格:1").withStyle(ChatFormatting.GOLD));
+        tooltip.add(Component.literal("価格:8").withStyle(ChatFormatting.GOLD));
         tooltip.add(Component.literal("効果時間:20s").withStyle(ChatFormatting.AQUA));
 
         super.appendHoverText(stack, level, tooltip, flag);
