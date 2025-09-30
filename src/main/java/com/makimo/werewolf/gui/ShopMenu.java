@@ -95,14 +95,17 @@ public class ShopMenu extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(Player player, int index) {return ItemStack.EMPTY;}
 
-    public void Shopping(Player player, ItemStack cost) {
+    public boolean Shopping(Player player, ItemStack cost) {
+        boolean isBuying = false;
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack slotStack = player.getInventory().getItem(i);
             if (slotStack.getItem() == cost.getItem() && slotStack.getCount() >= cost.getCount()) {
                 slotStack.shrink(cost.getCount());
+                isBuying = true;
                 break; // 最初のスロットで見つかったらループを終了
             }
         }
+        return isBuying;
     }
 
     @Override
@@ -120,24 +123,27 @@ public class ShopMenu extends AbstractContainerMenu {
                             case VILLAGE, LUNATIC : {
                                 ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 8);
                                 if (player.getInventory().contains(cost)) {
-                                    Shopping(player, cost);
-                                    player.getInventory().add(new ItemStack(ItemRegistry.CRYSTAL.get(), 1));
+                                    if (Shopping(player, cost)) {
+                                        player.getInventory().add(new ItemStack(ItemRegistry.CRYSTAL.get(), 1));
+                                    }
                                 }
                                 break;
                             }
                             case WEREWOLF : {
                                 ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 8);
                                 if (player.getInventory().contains(cost)) {
-                                    Shopping(player, cost);
-                                    player.getInventory().add(new ItemStack(ItemRegistry.WOLVES_AXE.get(), 1));
+                                    if (Shopping(player, cost)) {
+                                        player.getInventory().add(new ItemStack(ItemRegistry.WOLVES_AXE.get(), 1));
+                                    }
                                 }
                                 break;
                             }
                             case FOX : {
                                 ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 6);
                                 if (player.getInventory().contains(cost)) {
-                                    Shopping(player, cost);
-                                    player.getInventory().add(new ItemStack(ItemRegistry.DISGUISE_ITEM.get(), 1));
+                                    if (Shopping(player, cost)) {
+                                        player.getInventory().add(new ItemStack(ItemRegistry.DISGUISE_ITEM.get(), 1));
+                                    }
                                 }
                                 break;
                             }
@@ -149,40 +155,45 @@ public class ShopMenu extends AbstractContainerMenu {
             case 1 : {
                 ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 8);
                 if (player.getInventory().contains(cost)) {
-                    Shopping(player, cost);
-                    player.getInventory().add(new ItemStack(ItemRegistry.INVISIBLE_ITEM.get(), 1));
+                    if (Shopping(player, cost)) {
+                        player.getInventory().add(new ItemStack(ItemRegistry.INVISIBLE_ITEM.get(), 1));
+                    }
                 }
                 break;
             }
             case 2 : {
                 ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 3);
                 if (player.getInventory().contains(cost)) {
-                    Shopping(player, cost);
-                    player.getInventory().add(new ItemStack(ItemRegistry.GROWING_ITEM.get(), 1));
+                    if (Shopping(player, cost)) {
+                        player.getInventory().add(new ItemStack(ItemRegistry.GROWING_ITEM.get(), 1));
+                    }
                 }
                 break;
             }
             case 3 : {
                 ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 10);
                 if (player.getInventory().contains(cost)) {
-                    Shopping(player, cost);
-                    player.getInventory().add(new ItemStack(ItemRegistry.BOMB_ITEM.get(), 1));
+                    if (Shopping(player, cost)) {
+                        player.getInventory().add(new ItemStack(ItemRegistry.BOMB_ITEM.get(), 1));
+                    }
                 }
                 break;
             }
             case 4 : {
                 ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 4);
                 if (player.getInventory().contains(cost)) {
-                    Shopping(player, cost);
-                    player.getInventory().add(new ItemStack(ItemRegistry.CANDLE_ITEM.get(), 1));
+                    if (Shopping(player, cost)) {
+                        player.getInventory().add(new ItemStack(ItemRegistry.CANDLE_ITEM.get(), 1));
+                    }
                 }
                 break;
             }
             case 5 : {
                 ItemStack cost = new ItemStack(ItemRegistry.COIN.get(), 30);
                 if (player.getInventory().contains(cost)) {
-                    Shopping(player, cost);
-                    player.getInventory().add(new ItemStack(ItemRegistry.DEATH_NOTE_ITEM.get(), 1));
+                    if (Shopping(player, cost)) {
+                        player.getInventory().add(new ItemStack(ItemRegistry.DEATH_NOTE_ITEM.get(), 1));
+                    }
                 }
                 break;
             }
